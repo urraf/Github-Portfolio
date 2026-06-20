@@ -47,11 +47,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Title and html file are required' }, { status: 400 });
     }
 
-    if (!file.name.endsWith('.html') && file.type !== 'text/html') {
+    if (typeof file === 'string') {
+      return NextResponse.json({ error: 'Invalid file format' }, { status: 400 });
+    }
+
+    const fileName = file.name || '';
+    if (!fileName.endsWith('.html') && file.type !== 'text/html') {
       return NextResponse.json({ error: 'Only HTML files allowed' }, { status: 400 });
     }
 
-    const content = await file.text();
+    const bytes = await file.arrayBuffer();
+    const content = Buffer.from(bytes).toString('utf-8');
     let slug = generateSlug(title);
 
     const db = await getDb();
@@ -75,8 +81,8 @@ export async function POST(request: NextRequest) {
     const result = await db.collection('htmlProjects').insertOne(newProject);
 
     return NextResponse.json({ success: true, id: result.insertedId, slug });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error adding html project:', error);
-    return NextResponse.json({ error: 'Failed to add html project' }, { status: 500 });
+    return NextResponse.json({ error: error.message || 'Failed to add html project' }, { status: 500 });
   }
 }

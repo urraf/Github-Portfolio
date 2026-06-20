@@ -74,9 +74,7 @@ export default function Component({ data }: PortfolioProps) {
                 <Link href="#overview" className="text-[#e6edf3] hover:text-white transition-colors whitespace-nowrap">
                   Overview
                 </Link>
-                <Link href="/project-overview" className="text-[#e6edf3] hover:text-white transition-colors whitespace-nowrap">
-                  Project Overview
-                </Link>
+
                 <Link
                   href={socialLinks.github}
                   target="_blank" rel="noopener noreferrer"
@@ -97,6 +95,9 @@ export default function Component({ data }: PortfolioProps) {
                 <Link href="/blog"
                   className="text-[#7d8590] hover:text-white transition-colors whitespace-nowrap">
                   Blog
+                </Link>
+                <Link href="/project-overview" className="text-[#e6edf3] hover:text-white transition-colors whitespace-nowrap">
+                  Project Overview
                 </Link>
               </nav>
             </div>

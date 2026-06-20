@@ -57,12 +57,18 @@ export default function HTMLProjectsManagerPage() {
         setTimeout(() => setUploadSuccess(false), 3000)
         loadProjects()
       } else {
-        const data = await res.json()
-        alert(data.error || "Failed to upload project")
+        const text = await res.text()
+        console.error("Server error response:", res.status, text)
+        try {
+          const data = JSON.parse(text)
+          alert(data.error || `Server error: ${res.status}`)
+        } catch (e) {
+          alert(`Failed to upload: ${res.status} ${res.statusText}`)
+        }
       }
-    } catch (err) {
-      console.error(err)
-      alert("Failed to upload project")
+    } catch (err: any) {
+      console.error("Network/Parsing error:", err)
+      alert(`Failed to upload: ${err.message}`)
     } finally {
       setIsUploading(false)
     }
