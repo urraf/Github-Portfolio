@@ -74,6 +74,9 @@ export default function Component({ data }: PortfolioProps) {
                 <Link href="#overview" className="text-[#e6edf3] hover:text-white transition-colors whitespace-nowrap">
                   Overview
                 </Link>
+                <Link href="/project-overview" className="text-[#e6edf3] hover:text-white transition-colors whitespace-nowrap">
+                  Project Overview
+                </Link>
                 <Link
                   href={socialLinks.github}
                   target="_blank" rel="noopener noreferrer"
@@ -123,6 +126,9 @@ export default function Component({ data }: PortfolioProps) {
               <nav className="flex flex-col gap-2 sm:gap-3 text-sm w-full">
                 <Link href="#overview" className="text-[#e6edf3] hover:text-white transition-colors py-1 w-full">
                   Overview
+                </Link>
+                <Link href="/project-overview" className="text-[#e6edf3] hover:text-white transition-colors py-1 w-full">
+                  Project Overview
                 </Link>
                 <Link href={socialLinks.github}
                   target="_blank" rel="noopener noreferrer"
