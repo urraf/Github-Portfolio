@@ -96,7 +96,7 @@ export default function Component({ data }: PortfolioProps) {
                   className="text-[#7d8590] hover:text-white transition-colors whitespace-nowrap">
                   Blog
                 </Link>
-                <Link href="/project-overview" className="text-[#e6edf3] hover:text-white transition-colors whitespace-nowrap">
+                <Link href="/project-overview" className="text-[#7d8590] hover:text-white transition-colors whitespace-nowrap">
                   Project Overview
                 </Link>
               </nav>
