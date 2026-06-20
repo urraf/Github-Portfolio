@@ -39,39 +39,52 @@ export default function HTMLProjectsManagerPage() {
     if (!newTitle.trim() || !selectedFile) return
 
     setIsUploading(true)
-    const formData = new FormData()
-    formData.append("title", newTitle.trim())
-    formData.append("htmlFile", selectedFile)
-
-    try {
-      const res = await fetch("/api/admin/html-projects", {
-        method: "POST",
-        body: formData,
-      })
-      
-      if (res.ok) {
-        setUploadSuccess(true)
-        setNewTitle("")
-        setSelectedFile(null)
-        if (fileInputRef.current) fileInputRef.current.value = ""
-        setTimeout(() => setUploadSuccess(false), 3000)
-        loadProjects()
-      } else {
-        const text = await res.text()
-        console.error("Server error response:", res.status, text)
-        try {
-          const data = JSON.parse(text)
-          alert(data.error || `Server error: ${res.status}`)
-        } catch (e) {
-          alert(`Failed to upload: ${res.status} ${res.statusText}`)
+    
+    const reader = new FileReader()
+    reader.onload = async (event) => {
+      try {
+        const base64Data = (event.target?.result as string).split(',')[1]
+        
+        const res = await fetch("/api/admin/html-projects", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            title: newTitle.trim(),
+            htmlBase64: base64Data
+          })
+        })
+        
+        if (res.ok) {
+          setUploadSuccess(true)
+          setNewTitle("")
+          setSelectedFile(null)
+          if (fileInputRef.current) fileInputRef.current.value = ""
+          setTimeout(() => setUploadSuccess(false), 3000)
+          loadProjects()
+        } else {
+          const text = await res.text()
+          console.error("Server error response:", res.status, text)
+          try {
+            const data = JSON.parse(text)
+            alert(data.error || `Server error: ${res.status}`)
+          } catch (e) {
+            alert(`Failed to upload: ${res.status} ${res.statusText}`)
+          }
         }
+      } catch (err: any) {
+        console.error("Network/Parsing error:", err)
+        alert(`Failed to upload: ${err.message}`)
+      } finally {
+        setIsUploading(false)
       }
-    } catch (err: any) {
-      console.error("Network/Parsing error:", err)
-      alert(`Failed to upload: ${err.message}`)
-    } finally {
+    }
+    reader.onerror = () => {
+      alert("Failed to read file")
       setIsUploading(false)
     }
+    reader.readAsDataURL(selectedFile)
   }
 
   const deleteProject = async (id: string) => {

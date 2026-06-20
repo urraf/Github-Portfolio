@@ -39,25 +39,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const formData = await request.formData();
-    const title = formData.get('title') as string | null;
-    const file = formData.get('htmlFile') as File | null;
+    const body = await request.json();
+    const { title, htmlBase64 } = body;
 
-    if (!title || !file) {
+    if (!title || !htmlBase64) {
       return NextResponse.json({ error: 'Title and html file are required' }, { status: 400 });
     }
 
-    if (typeof file === 'string') {
-      return NextResponse.json({ error: 'Invalid file format' }, { status: 400 });
-    }
-
-    const fileName = file.name || '';
-    if (!fileName.endsWith('.html') && file.type !== 'text/html') {
-      return NextResponse.json({ error: 'Only HTML files allowed' }, { status: 400 });
-    }
-
-    const bytes = await file.arrayBuffer();
-    const content = Buffer.from(bytes).toString('utf-8');
+    // Decode base64 securely back into UTF-8 HTML string
+    const bytes = Buffer.from(htmlBase64, 'base64');
+    const content = bytes.toString('utf-8');
+    
     let slug = generateSlug(title);
 
     const db = await getDb();
