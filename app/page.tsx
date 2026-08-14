@@ -56,13 +56,13 @@ export default async function Page() {
           if (stat.label === 'Github Repos' && portfolioData.manualGithubRepos) {
             stat.value = `${portfolioData.manualGithubRepos}`;
           }
-          if (stat.label === 'LeetCode Rating' && portfolioData.manualLeetcodeRating) {
+          if ((stat.label === 'LeetCode Rating' || stat.label === 'LeetCode') && portfolioData.manualLeetcodeRating) {
             stat.value = `${portfolioData.manualLeetcodeRating}`;
           }
-          if (stat.label === 'Codeforces Rating' && portfolioData.manualCodeforcesRating) {
+          if ((stat.label === 'Codeforces Rating' || stat.label === 'Codeforces') && portfolioData.manualCodeforcesRating) {
             stat.value = `${portfolioData.manualCodeforcesRating}`;
           }
-          if (stat.label === 'Total Problems Solved' && portfolioData.totalProblemsSolved !== undefined && portfolioData.totalProblemsSolved !== null) {
+          if ((stat.label === 'Total Problems Solved' || stat.label === 'Problems Solved') && portfolioData.totalProblemsSolved !== undefined && portfolioData.totalProblemsSolved !== null) {
             stat.value = `${portfolioData.totalProblemsSolved}`;
           }
         });
