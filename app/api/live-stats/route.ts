@@ -29,7 +29,15 @@ async function fetchLeetCodeStats(username: string) {
   try {
     const [statsRes, contestRes] = await Promise.all([
       fetch(`https://leetcode-api-faisalshohag.vercel.app/${username}`, { next: { revalidate: 3600 } }),
-      fetch(`https://alfa-leetcode-api.onrender.com/${username}/contest`, { next: { revalidate: 3600 } })
+      fetch(`https://leetcode.com/graphql`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          query: 'query userContestRankingInfo($username: String!) { userContestRanking(username: $username) { rating } }',
+          variables: { username }
+        }),
+        next: { revalidate: 3600 }
+      })
     ]);
     
     let totalSolved = 0;
@@ -44,7 +52,9 @@ async function fetchLeetCodeStats(username: string) {
 
     if (contestRes.ok) {
       const contestData = await contestRes.json();
-      rating = Math.round(contestData.contestRating || 0);
+      if (contestData?.data?.userContestRanking?.rating) {
+        rating = Math.round(contestData.data.userContestRanking.rating);
+      }
     }
 
     return { rating, totalSolved, ranking };
@@ -56,18 +66,38 @@ async function fetchLeetCodeStats(username: string) {
 
 async function fetchCodeforcesStats(handle: string) {
   try {
-    const res = await fetch(`https://codeforces.com/api/user.info?handles=${handle}`, {
-      next: { revalidate: 3600 },
-    });
-    if (!res.ok) return null;
-    const data = await res.json();
-    if (data.status !== 'OK' || !data.result || data.result.length === 0) return null;
-    const user = data.result[0];
-    return {
-      rating: user.rating || 0,
-      maxRating: user.maxRating || 0,
-      rank: user.rank || 'unrated',
-    };
+    const [infoRes, statusRes] = await Promise.all([
+      fetch(`https://codeforces.com/api/user.info?handles=${handle}`, { next: { revalidate: 3600 } }),
+      fetch(`https://codeforces.com/api/user.status?handle=${handle}`, { next: { revalidate: 3600 } })
+    ]);
+
+    let rating = 0;
+    let rank = 'unrated';
+    let solvedCount = 0;
+
+    if (infoRes.ok) {
+      const data = await infoRes.json();
+      if (data.status === 'OK' && data.result && data.result.length > 0) {
+        rating = data.result[0].rating || 0;
+        rank = data.result[0].rank || 'unrated';
+      }
+    }
+
+    if (statusRes.ok) {
+      const statusData = await statusRes.json();
+      if (statusData.status === 'OK' && statusData.result) {
+        // Count unique problems solved
+        const solved = new Set();
+        for (const sub of statusData.result) {
+          if (sub.verdict === 'OK' && sub.problem && sub.problem.name) {
+            solved.add(sub.problem.name);
+          }
+        }
+        solvedCount = solved.size;
+      }
+    }
+
+    return { rating, rank, solvedCount };
   } catch (e) {
     console.error('Codeforces API error:', e);
     return null;
@@ -111,8 +141,16 @@ export async function GET(request: Request) {
       fetchCodeforcesStats(codeforcesHandle),
     ]);
 
-    // Build stats array for the main stat cards
-    const totalProblems = (leetcode?.totalSolved || 0);
+    // Fetch manual total problems solved from Admin Panel (falls back to legacy extraProblemsSolved sum if not set)
+    let totalProblems = 700;
+    if (portfolioData?.totalProblemsSolved !== undefined) {
+      totalProblems = Number(portfolioData.totalProblemsSolved);
+    } else if (portfolioData?.extraProblemsSolved !== undefined) {
+      totalProblems = (leetcode?.totalSolved || 0) + (codeforces?.solvedCount || 0) + Number(portfolioData.extraProblemsSolved);
+    } else {
+      totalProblems = (leetcode?.totalSolved || 0) + (codeforces?.solvedCount || 0);
+    }
+
     const stats = [
       {
         value: github ? `${github.publicRepos}+` : '25+',
@@ -126,12 +164,12 @@ export async function GET(request: Request) {
       },
       {
         value: codeforces ? `${codeforces.rating}` : '1000+',
-        label: 'Codeforces',
+        label: 'Codeforces Rating',
         color: 'text-[#1f8acb]',
       },
       {
         value: totalProblems ? `${totalProblems}+` : '700+',
-        label: 'Problems Solved',
+        label: 'Total Problems Solved',
         color: 'text-[#2ea043]',
       },
     ];
@@ -155,7 +193,7 @@ export async function GET(request: Request) {
       codingStats.push({
         platform: 'Codeforces',
         rating: `${codeforces.rating} (${codeforces.rank})`,
-        problems: '—',
+        problems: `${codeforces.solvedCount}`,
         color: 'text-[#1f8acb]',
         bgColor: 'bg-[#1f8acb]/10',
         borderColor: 'border-[#1f8acb]/20',

@@ -13,6 +13,49 @@ export default function SettingsPage() {
   const [status, setStatus] = useState<{ type: "success" | "error"; message: string } | null>(null)
   const [showCurrent, setShowCurrent] = useState(false)
   const [showNew, setShowNew] = useState(false)
+  
+  // Extra Problems State
+  const [totalProblems, setTotalProblems] = useState<string>("700")
+  const [savingExtra, setSavingExtra] = useState(false)
+  const [extraStatus, setExtraStatus] = useState<{ type: "success" | "error"; message: string } | null>(null)
+
+  // Load portfolio settings
+  useState(() => {
+    fetch("/api/admin/portfolio")
+      .then(r => r.json())
+      .then(data => {
+        if (data.totalProblemsSolved !== undefined) {
+          setTotalProblems(data.totalProblemsSolved.toString());
+        } else if (data.extraProblemsSolved !== undefined) {
+          // Fallback if they already saved the old field
+          setTotalProblems(data.extraProblemsSolved.toString());
+        }
+      })
+      .catch(() => {})
+  })
+
+  const handleSaveExtraProblems = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setExtraStatus(null)
+    setSavingExtra(true)
+    
+    try {
+      const res = await fetch("/api/admin/portfolio", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ totalProblemsSolved: parseInt(totalProblems) || 0 }),
+      })
+      
+      if (res.ok) {
+        setExtraStatus({ type: "success", message: "Total problems count updated!" })
+      } else {
+        setExtraStatus({ type: "error", message: "Failed to update" })
+      }
+    } catch {
+      setExtraStatus({ type: "error", message: "Connection error" })
+    }
+    setSavingExtra(false)
+  }
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -124,6 +167,44 @@ export default function SettingsPage() {
               className="bg-[#238636] hover:bg-[#2ea043] text-white border-0"
             >
               {saving ? "Changing..." : <><Save className="h-4 w-4 mr-2" />Change Password</>}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+
+      <Card className="bg-[#161b22] border-[#30363d]">
+        <CardHeader>
+          <CardTitle className="text-white flex items-center gap-2 text-base">
+            <CheckCircle className="h-4 w-4 text-[#58a6ff]" />
+            Total Problems Solved
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="pt-0">
+          {extraStatus && (
+            <div className={`flex items-center gap-2 p-3 rounded-lg text-sm mb-4 ${extraStatus.type === "success" ? "bg-[#238636]/10 border border-[#238636]/20 text-[#3fb950]" : "bg-[#f85149]/10 border border-[#f85149]/20 text-[#f85149]"}`}>
+              {extraStatus.type === "success" ? <CheckCircle className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
+              <span>{extraStatus.message}</span>
+            </div>
+          )}
+          <form onSubmit={handleSaveExtraProblems} className="space-y-4 max-w-md">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-[#e6edf3]">Total Count</label>
+              <Input
+                type="number"
+                value={totalProblems}
+                onChange={e => setTotalProblems(e.target.value)}
+                className={ic}
+                min="0"
+                required
+              />
+              <p className="text-[#8b949e] text-xs">This number will be displayed as your total problems solved on your portfolio, replacing the automated count.</p>
+            </div>
+            <Button
+              type="submit"
+              disabled={savingExtra}
+              className="bg-[#238636] hover:bg-[#2ea043] text-white border-0"
+            >
+              {savingExtra ? "Saving..." : <><Save className="h-4 w-4 mr-2" />Save Stats</>}
             </Button>
           </form>
         </CardContent>

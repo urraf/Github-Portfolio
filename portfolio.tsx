@@ -17,7 +17,7 @@ interface PortfolioProps {
 
 export default function Component({ data }: PortfolioProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [resumes, setResumes] = useState<{_id: string; label: string; url: string}[]>([])
+  const [resumes, setResumes] = useState<{ _id: string; label: string; url: string }[]>([])
   const [resumeDropdownOpen, setResumeDropdownOpen] = useState(false)
   const resumeDropdownRef = useRef<HTMLDivElement>(null)
 
@@ -25,7 +25,7 @@ export default function Component({ data }: PortfolioProps) {
   useEffect(() => {
     fetch('/api/resumes').then(r => r.json()).then(data => {
       if (Array.isArray(data)) setResumes(data)
-    }).catch(() => {})
+    }).catch(() => { })
   }, [])
 
   // Close dropdown on outside click
@@ -68,7 +68,7 @@ export default function Component({ data }: PortfolioProps) {
   // Use data from props (JSON file) or fallback defaults
   const profile = data?.profile || { name: "Farhan", username: "urraf", tagline: "🚀 Software Engineer", bio: "", detailedBio: "", detailedBioSub: "", institution: "NSUT", location: "New Delhi, India", email: "farhan.techcareer@gmail.com", phone: "8XXXXXXXX", avatarFallback: "F" }
   const socialLinks = data?.socialLinks || { github: "https://github.com/urraf", linkedin: "https://www.linkedin.com/in/nahrafxd", twitter: "https://www.x.com/urrafx", linkedinDisplay: "linkedin.com/in/nahrafxd", leetcode: "https://www.leetcode.com/u/urraf" }
-  const stats = data?.liveStats || data?.stats || [{ value: "25+", label: "Github Repos", color: "text-white" }, { value: "1.8k", label: "LeetCode Rating", color: "text-[#ffa116]" }, { value: "1000+", label: "Codeforces", color: "text-[#1f8acb]" }, { value: "700+", label: "Problems Solved", color: "text-[#2ea043]" }]
+  const stats = data?.liveStats || data?.stats || [{ value: "25+", label: "Github Repos", color: "text-white" }, { value: "1.8k", label: "LeetCode Rating", color: "text-[#ffa116]" }, { value: "1000+", label: "Codeforces Rating", color: "text-[#1f8acb]" }, { value: "700+", label: "Problems Solved", color: "text-[#2ea043]" }]
   const projects: any[] = data?.projects || []
   const experiences: any[] = data?.experiences || []
   const skills: Record<string, string[]> = data?.skills || {}

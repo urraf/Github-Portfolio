@@ -39,6 +39,9 @@ export async function PUT(request: NextRequest) {
       { upsert: true }
     );
 
+    // Invalidate the live stats cache so new values reflect immediately
+    await db.collection('liveStats').deleteOne({ _id: 'current' as unknown as import('mongodb').ObjectId });
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error updating portfolio data:', error);
