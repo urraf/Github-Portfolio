@@ -13,6 +13,7 @@ interface ClientWork {
   projectUrl: string
   description: string
   techStack: string[]
+  cost?: string
   status: string
   testimonial: string
   imageUrl?: string
@@ -90,14 +91,20 @@ export default function ClientWorkPublicPage() {
                 <div className="flex flex-col md:flex-row">
                   {/* Image Section - Only renders if imageUrl exists */}
                   {entry.imageUrl && (
-                    <div className="w-full md:w-2/5 lg:w-1/3 relative border-b md:border-b-0 md:border-r border-[#30363d] overflow-hidden bg-[#0d1117] min-h-[200px] md:min-h-full flex-shrink-0">
+                    <div className="w-full md:w-2/5 lg:w-1/3 relative border-b md:border-b-0 md:border-r border-[#30363d] overflow-hidden bg-[#0d1117]/50 min-h-[200px] md:min-h-full flex-shrink-0 group/img">
+                      {entry.projectUrl ? (
+                        <a href={entry.projectUrl} target="_blank" rel="noopener noreferrer" className="absolute inset-0 z-20 flex items-center justify-center bg-[#0d1117]/80 opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 backdrop-blur-sm">
+                          <span className="flex items-center gap-2 text-white font-medium bg-[#1f6feb] hover:bg-[#388bfd] px-4 py-2 rounded-full transition-colors">
+                            <ExternalLink className="h-4 w-4" /> Visit Site
+                          </span>
+                        </a>
+                      ) : null}
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img 
                         src={entry.imageUrl} 
                         alt={`${entry.title} preview`}
-                        className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105 absolute inset-0"
+                        className="w-full h-full object-contain p-4 transition-transform duration-700 group-hover:scale-105 absolute inset-0"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#161b22] via-transparent to-transparent opacity-60 md:hidden" />
                     </div>
                   )}
 
@@ -109,6 +116,11 @@ export default function ClientWorkPublicPage() {
                         <div className="space-y-1.5 flex-1">
                           <div className="flex items-center gap-3 flex-wrap">
                             <h2 className="text-xl sm:text-2xl font-bold text-white group-hover:text-[#58a6ff] transition-colors">{entry.title}</h2>
+                            {entry.cost && (
+                              <Badge className="bg-[#2ea043]/10 text-[#3fb950] border-[#2ea043]/30 font-medium text-sm px-2.5 shadow-[0_0_10px_rgba(46,160,67,0.1)]">
+                                {entry.cost}
+                              </Badge>
+                            )}
                             <Badge className={
                               entry.status === 'Completed'
                                 ? "bg-[#238636]/10 text-[#3fb950] border-[#238636]/30 shadow-[0_0_10px_rgba(35,134,54,0.1)]"

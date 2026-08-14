@@ -13,7 +13,7 @@ export async function GET() {
     const db = await getDb();
     const entries = await db.collection('clientWork')
       .find({})
-      .sort({ createdAt: -1 })
+      .sort({ order: 1, createdAt: -1 })
       .toArray();
 
     return NextResponse.json(entries);
@@ -76,6 +76,7 @@ export async function POST(request: NextRequest) {
       status: status || 'Completed',
       testimonial: testimonial || '',
       imageUrl: imageUrl,
+      order: 0,
       createdAt: new Date(),
     };
 

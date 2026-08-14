@@ -48,6 +48,38 @@ export default async function Page() {
           }
         }
       }
+
+      // Ensure manual overrides apply immediately even if cache is missing or stale
+      if (portfolioData.stats || portfolioData.liveStats) {
+        const statsToUpdate = portfolioData.liveStats || portfolioData.stats;
+        statsToUpdate.forEach((stat: any) => {
+          if (stat.label === 'Github Repos' && portfolioData.manualGithubRepos) {
+            stat.value = `${portfolioData.manualGithubRepos}`;
+          }
+          if (stat.label === 'LeetCode Rating' && portfolioData.manualLeetcodeRating) {
+            stat.value = `${portfolioData.manualLeetcodeRating}`;
+          }
+          if (stat.label === 'Codeforces Rating' && portfolioData.manualCodeforcesRating) {
+            stat.value = `${portfolioData.manualCodeforcesRating}`;
+          }
+          if (stat.label === 'Total Problems Solved' && portfolioData.totalProblemsSolved !== undefined && portfolioData.totalProblemsSolved !== null) {
+            stat.value = `${portfolioData.totalProblemsSolved}`;
+          }
+        });
+        portfolioData.liveStats = statsToUpdate;
+      }
+
+      if (portfolioData.codingStats) {
+        portfolioData.codingStats.forEach((stat: any) => {
+          if (stat.platform === 'LeetCode') {
+            if (portfolioData.manualLeetcodeRating) stat.rating = `${portfolioData.manualLeetcodeRating}`;
+            if (portfolioData.totalProblemsSolved !== undefined && portfolioData.totalProblemsSolved !== null) stat.problems = `${portfolioData.totalProblemsSolved}`;
+          }
+          if (stat.platform === 'Codeforces') {
+            if (portfolioData.manualCodeforcesRating) stat.rating = `${portfolioData.manualCodeforcesRating}`;
+          }
+        });
+      }
     } catch (e) {
       console.error('Failed to read live stats:', e)
     }

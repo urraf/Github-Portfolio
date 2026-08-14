@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server';
 import { getDb } from '@/lib/mongodb';
 
-// Public GET - list all client work entries (excludes cost)
+// Public GET - list all client work entries
 export async function GET() {
   try {
     const db = await getDb();
     const entries = await db.collection('clientWork')
-      .find({}, { projection: { cost: 0 } })
-      .sort({ createdAt: -1 })
+      .find({})
+      .sort({ order: 1, createdAt: -1 })
       .toArray();
 
     return NextResponse.json(entries, {

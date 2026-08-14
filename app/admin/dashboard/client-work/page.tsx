@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Plus, Trash2, HandCoins, Edit3, X, Save, CheckCircle, ExternalLink } from "lucide-react"
+import { Plus, Trash2, HandCoins, Edit3, X, Save, CheckCircle, ExternalLink, GripVertical } from "lucide-react"
 
 interface ClientWork {
   _id: string
@@ -35,6 +35,7 @@ export default function ClientWorkPage() {
   const [newTag, setNewTag] = useState("")
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
 
   const loadEntries = () => {
     fetch("/api/admin/client-work").then(r => r.json()).then(data => {
@@ -127,6 +128,38 @@ export default function ClientWorkPage() {
     }
   }
 
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    setDraggedIndex(index)
+    e.dataTransfer.effectAllowed = "move"
+  }
+
+  const handleDragEnter = (e: React.DragEvent, index: number) => {
+    e.preventDefault()
+    if (draggedIndex === null || draggedIndex === index) return
+
+    const newEntries = [...entries]
+    const draggedItem = newEntries[draggedIndex]
+    newEntries.splice(draggedIndex, 1)
+    newEntries.splice(index, 0, draggedItem)
+    
+    setDraggedIndex(index)
+    setEntries(newEntries)
+  }
+
+  const handleDragEnd = async () => {
+    setDraggedIndex(null)
+    const orderedIds = entries.map(e => e._id)
+    try {
+      await fetch('/api/admin/client-work/reorder', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderedIds })
+      })
+    } catch (err) {
+      console.error('Failed to save reorder', err)
+    }
+  }
+
   const ic = "bg-[#0d1117] border-[#30363d] text-white focus-visible:ring-[#58a6ff]"
 
   if (editing) {
@@ -193,9 +226,8 @@ export default function ClientWorkPage() {
                 </div>
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-medium text-[#e6edf3]">Cost / Charge (Admin Only)</label>
+                <label className="text-xs font-medium text-[#e6edf3]">Cost / Charge</label>
                 <Input value={editing.cost} onChange={e => setEditing({ ...editing, cost: e.target.value })} className={ic} placeholder="e.g. ₹15,000 or $200" />
-                <p className="text-[10px] text-[#484f58]">This is only visible in the admin panel, not publicly.</p>
               </div>
               <div className="space-y-2">
                 <label className="text-xs font-medium text-[#e6edf3]">Status</label>
@@ -243,10 +275,21 @@ export default function ClientWorkPage() {
         </Card>
       ) : (
         <div className="space-y-3">
-          {entries.map(entry => (
-            <Card key={entry._id} className="bg-[#161b22] border-[#30363d] hover:border-[#484f58] transition-colors">
+          {entries.map((entry, index) => (
+            <Card 
+              key={entry._id} 
+              className={`bg-[#161b22] border-[#30363d] hover:border-[#484f58] transition-colors ${draggedIndex === index ? 'opacity-50' : ''}`}
+              draggable
+              onDragStart={(e) => handleDragStart(e, index)}
+              onDragEnter={(e) => handleDragEnter(e, index)}
+              onDragEnd={handleDragEnd}
+              onDragOver={(e) => e.preventDefault()}
+            >
               <CardContent className="p-5">
-                <div className="flex items-start justify-between gap-4">
+                <div className="flex items-start gap-4">
+                  <div className="flex items-center self-stretch border-r border-[#30363d] pr-4 mr-2 cursor-grab active:cursor-grabbing text-[#7d8590] hover:text-white transition-colors">
+                    <GripVertical className="h-5 w-5" />
+                  </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
                       <h3 className="text-white font-semibold truncate">{entry.title}</h3>
