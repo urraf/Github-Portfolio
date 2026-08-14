@@ -184,6 +184,9 @@ export default function Component({ data }: PortfolioProps) {
                 <Link href="#overview" className="text-[#e6edf3] hover:text-white transition-colors py-1 w-full">
                   Overview
                 </Link>
+                <Link href="/blog" className="text-[#e6edf3] hover:text-white transition-colors py-1 w-full">
+                  Blog
+                </Link>
                 <Link href="/project-overview" className="text-[#e6edf3] hover:text-white transition-colors py-1 w-full">
                   Project Overview
                 </Link>
