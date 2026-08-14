@@ -74,22 +74,27 @@ async function fetchCodeforcesStats(handle: string) {
   }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const forceRefresh = searchParams.get('force') === 'true';
+    
     const db = await getDb();
 
     // Check cache (valid for 1 hour)
-    const cached = await db.collection('liveStats').findOne({ _id: 'current' as unknown as import('mongodb').ObjectId });
-    if (cached) {
-      const cacheAge = Date.now() - new Date(cached.fetchedAt).getTime();
-      if (cacheAge < 60 * 60 * 1000) { // 1 hour
-        return NextResponse.json({
-          stats: cached.stats,
-          codingStats: cached.codingStats,
-          cached: true,
-        }, {
-          headers: { 'Cache-Control': 'public, max-age=300, s-maxage=600' },
-        });
+    if (!forceRefresh) {
+      const cached = await db.collection('liveStats').findOne({ _id: 'current' as unknown as import('mongodb').ObjectId });
+      if (cached) {
+        const cacheAge = Date.now() - new Date(cached.fetchedAt).getTime();
+        if (cacheAge < 60 * 60 * 1000) { // 1 hour
+          return NextResponse.json({
+            stats: cached.stats,
+            codingStats: cached.codingStats,
+            cached: true,
+          }, {
+            headers: { 'Cache-Control': 'public, max-age=300, s-maxage=600' },
+          });
+        }
       }
     }
 
