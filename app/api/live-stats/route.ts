@@ -141,29 +141,29 @@ export async function GET(request: Request) {
       fetchCodeforcesStats(codeforcesHandle),
     ]);
 
-    // Fetch manual total problems solved from Admin Panel (falls back to legacy extraProblemsSolved sum if not set)
-    let totalProblems = 700;
-    if (portfolioData?.totalProblemsSolved !== undefined) {
+    // Fetch manual overrides from Admin Panel
+    let totalProblems = (leetcode?.totalSolved || 0) + (codeforces?.solvedCount || 0);
+    if (portfolioData?.totalProblemsSolved !== undefined && portfolioData.totalProblemsSolved !== null) {
       totalProblems = Number(portfolioData.totalProblemsSolved);
-    } else if (portfolioData?.extraProblemsSolved !== undefined) {
-      totalProblems = (leetcode?.totalSolved || 0) + (codeforces?.solvedCount || 0) + Number(portfolioData.extraProblemsSolved);
-    } else {
-      totalProblems = (leetcode?.totalSolved || 0) + (codeforces?.solvedCount || 0);
     }
+
+    const githubVal = portfolioData?.manualGithubRepos ? `${portfolioData.manualGithubRepos}+` : (github ? `${github.publicRepos}+` : '25+');
+    const leetcodeVal = portfolioData?.manualLeetcodeRating ? `${portfolioData.manualLeetcodeRating}` : (leetcode ? `${leetcode.rating}` : '1800+');
+    const codeforcesVal = portfolioData?.manualCodeforcesRating ? `${portfolioData.manualCodeforcesRating}` : (codeforces ? `${codeforces.rating}` : '1000+');
 
     const stats = [
       {
-        value: github ? `${github.publicRepos}+` : '25+',
+        value: githubVal,
         label: 'Github Repos',
         color: 'text-white',
       },
       {
-        value: leetcode ? `${leetcode.rating}` : '1800+',
+        value: leetcodeVal,
         label: 'LeetCode Rating',
         color: 'text-[#ffa116]',
       },
       {
-        value: codeforces ? `${codeforces.rating}` : '1000+',
+        value: codeforcesVal,
         label: 'Codeforces Rating',
         color: 'text-[#1f8acb]',
       },
@@ -180,7 +180,7 @@ export async function GET(request: Request) {
     if (leetcode) {
       codingStats.push({
         platform: 'LeetCode',
-        rating: `${leetcode.rating}`,
+        rating: leetcodeVal,
         problems: `${leetcode.totalSolved}`,
         color: 'text-[#ffa116]',
         bgColor: 'bg-[#ffa116]/10',
@@ -192,7 +192,7 @@ export async function GET(request: Request) {
     if (codeforces) {
       codingStats.push({
         platform: 'Codeforces',
-        rating: `${codeforces.rating} (${codeforces.rank})`,
+        rating: portfolioData?.manualCodeforcesRating ? `${portfolioData.manualCodeforcesRating} (${codeforces?.rank || 'unrated'})` : (codeforces ? `${codeforces.rating} (${codeforces.rank})` : '1000+ (unrated)'),
         problems: `${codeforces.solvedCount}`,
         color: 'text-[#1f8acb]',
         bgColor: 'bg-[#1f8acb]/10',

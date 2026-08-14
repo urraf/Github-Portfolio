@@ -17,12 +17,13 @@ interface ClientWork {
   cost: string
   status: string
   testimonial: string
+  imageUrl?: string
   createdAt: string
 }
 
 const emptyEntry: Omit<ClientWork, '_id' | 'createdAt'> = {
   title: '', clientName: '', projectUrl: '', description: '',
-  techStack: [], cost: '', status: 'Completed', testimonial: ''
+  techStack: [], cost: '', status: 'Completed', testimonial: '', imageUrl: ''
 }
 
 export default function ClientWorkPage() {
@@ -32,6 +33,8 @@ export default function ClientWorkPage() {
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [newTag, setNewTag] = useState("")
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
 
   const loadEntries = () => {
     fetch("/api/admin/client-work").then(r => r.json()).then(data => {
@@ -44,29 +47,41 @@ export default function ClientWorkPage() {
   const startCreate = () => {
     setEditing({ _id: '', createdAt: '', ...emptyEntry })
     setIsNew(true)
+    setImageFile(null)
+    setPreviewUrl(null)
+  }
+
+  const handleEdit = (entry: ClientWork) => {
+    setEditing(entry)
+    setIsNew(false)
+    setImageFile(null)
+    setPreviewUrl(entry.imageUrl || null)
   }
 
   const saveEntry = async () => {
     if (!editing) return
     setSaving(true)
 
-    const payload = {
-      title: editing.title,
-      clientName: editing.clientName,
-      projectUrl: editing.projectUrl,
-      description: editing.description,
-      techStack: editing.techStack,
-      cost: editing.cost,
-      status: editing.status,
-      testimonial: editing.testimonial,
+    const formData = new FormData()
+    formData.append("title", editing.title)
+    formData.append("clientName", editing.clientName)
+    formData.append("projectUrl", editing.projectUrl)
+    formData.append("description", editing.description)
+    formData.append("cost", editing.cost)
+    formData.append("status", editing.status)
+    formData.append("testimonial", editing.testimonial)
+    
+    editing.techStack.forEach(t => formData.append("techStack", t))
+
+    if (imageFile) {
+      formData.append("image", imageFile)
     }
 
     try {
       if (isNew) {
         const res = await fetch("/api/admin/client-work", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
+          body: formData,
         })
         if (res.ok) {
           setSaved(true); setTimeout(() => setSaved(false), 3000)
@@ -75,8 +90,7 @@ export default function ClientWorkPage() {
       } else {
         const res = await fetch(`/api/admin/client-work/${editing._id}`, {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
+          body: formData,
         })
         if (res.ok) {
           setSaved(true); setTimeout(() => setSaved(false), 3000)
@@ -103,6 +117,14 @@ export default function ClientWorkPage() {
   const removeTag = (i: number) => {
     if (!editing) return
     setEditing({ ...editing, techStack: editing.techStack.filter((_, idx) => idx !== i) })
+  }
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0]
+      setImageFile(file)
+      setPreviewUrl(URL.createObjectURL(file))
+    }
   }
 
   const ic = "bg-[#0d1117] border-[#30363d] text-white focus-visible:ring-[#58a6ff]"
@@ -139,6 +161,16 @@ export default function ClientWorkPage() {
               <div className="space-y-2">
                 <label className="text-xs font-medium text-[#e6edf3]">Description</label>
                 <Textarea value={editing.description} onChange={e => setEditing({ ...editing, description: e.target.value })} className={`${ic} min-h-[120px]`} placeholder="What did you build? What problems did you solve?" />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-[#e6edf3]">Project Image</label>
+                {previewUrl && (
+                  <div className="mb-2 relative rounded-md overflow-hidden border border-[#30363d] bg-[#0d1117] h-40 flex items-center justify-center">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={previewUrl} alt="Project Preview" className="max-h-full max-w-full object-cover" />
+                  </div>
+                )}
+                <Input type="file" accept="image/*" onChange={handleImageChange} className={`cursor-pointer ${ic}`} />
               </div>
             </CardContent>
           </Card>
@@ -239,7 +271,7 @@ export default function ClientWorkPage() {
                     </div>
                   </div>
                   <div className="flex items-center gap-1 flex-shrink-0">
-                    <Button size="sm" variant="ghost" className="text-[#7d8590] hover:text-white hover:bg-[#21262d] h-8 w-8 p-0" onClick={() => { setEditing(entry); setIsNew(false) }} title="Edit"><Edit3 className="h-4 w-4" /></Button>
+                    <Button size="sm" variant="ghost" className="text-[#7d8590] hover:text-white hover:bg-[#21262d] h-8 w-8 p-0" onClick={() => handleEdit(entry)} title="Edit"><Edit3 className="h-4 w-4" /></Button>
                     <Button size="sm" variant="ghost" className="text-[#f85149] hover:bg-[#f85149]/10 h-8 w-8 p-0" onClick={() => deleteEntry(entry._id)} title="Delete"><Trash2 className="h-4 w-4" /></Button>
                   </div>
                 </div>

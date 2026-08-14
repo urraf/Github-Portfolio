@@ -31,11 +31,38 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await request.json();
-    const { title, clientName, projectUrl, description, techStack, cost, status, testimonial } = body;
+    const formData = await request.formData();
+    const title = formData.get('title') as string;
+    const clientName = formData.get('clientName') as string;
+    const projectUrl = formData.get('projectUrl') as string;
+    const description = formData.get('description') as string;
+    const techStack = formData.getAll('techStack') as string[];
+    const cost = formData.get('cost') as string;
+    const status = formData.get('status') as string;
+    const testimonial = formData.get('testimonial') as string;
+    
+    const imageFile = formData.get('image') as File | null;
 
     if (!title) {
       return NextResponse.json({ error: 'Title is required' }, { status: 400 });
+    }
+
+    let imageUrl = '';
+
+    if (imageFile) {
+      try {
+        const bytes = await imageFile.arrayBuffer();
+        const buffer = Buffer.from(bytes);
+        
+        const { uploadBuffer } = await import('@/lib/cloudinary');
+        const result = await uploadBuffer(buffer, {
+          folder: 'client_work',
+        });
+        imageUrl = result.url;
+      } catch (uploadError) {
+        console.error('Error uploading image to Cloudinary:', uploadError);
+        return NextResponse.json({ error: 'Failed to upload image' }, { status: 500 });
+      }
     }
 
     const db = await getDb();
@@ -48,6 +75,7 @@ export async function POST(request: NextRequest) {
       cost: cost || '',
       status: status || 'Completed',
       testimonial: testimonial || '',
+      imageUrl: imageUrl,
       createdAt: new Date(),
     };
 

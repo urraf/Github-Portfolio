@@ -14,8 +14,13 @@ export default function SettingsPage() {
   const [showCurrent, setShowCurrent] = useState(false)
   const [showNew, setShowNew] = useState(false)
   
-  // Extra Problems State
-  const [totalProblems, setTotalProblems] = useState<string>("700")
+  // Manual Stats State
+  const [statsOverride, setStatsOverride] = useState({
+    manualGithubRepos: "",
+    manualLeetcodeRating: "",
+    manualCodeforcesRating: "",
+    totalProblemsSolved: ""
+  })
   const [savingExtra, setSavingExtra] = useState(false)
   const [extraStatus, setExtraStatus] = useState<{ type: "success" | "error"; message: string } | null>(null)
 
@@ -24,12 +29,12 @@ export default function SettingsPage() {
     fetch("/api/admin/portfolio")
       .then(r => r.json())
       .then(data => {
-        if (data.totalProblemsSolved !== undefined) {
-          setTotalProblems(data.totalProblemsSolved.toString());
-        } else if (data.extraProblemsSolved !== undefined) {
-          // Fallback if they already saved the old field
-          setTotalProblems(data.extraProblemsSolved.toString());
-        }
+        setStatsOverride({
+          manualGithubRepos: data.manualGithubRepos?.toString() || "",
+          manualLeetcodeRating: data.manualLeetcodeRating?.toString() || "",
+          manualCodeforcesRating: data.manualCodeforcesRating?.toString() || "",
+          totalProblemsSolved: data.totalProblemsSolved?.toString() || (data.extraProblemsSolved?.toString() || "")
+        })
       })
       .catch(() => {})
   })
@@ -40,14 +45,21 @@ export default function SettingsPage() {
     setSavingExtra(true)
     
     try {
+      const payload = {
+        manualGithubRepos: statsOverride.manualGithubRepos ? parseInt(statsOverride.manualGithubRepos) : null,
+        manualLeetcodeRating: statsOverride.manualLeetcodeRating ? parseInt(statsOverride.manualLeetcodeRating) : null,
+        manualCodeforcesRating: statsOverride.manualCodeforcesRating ? parseInt(statsOverride.manualCodeforcesRating) : null,
+        totalProblemsSolved: statsOverride.totalProblemsSolved ? parseInt(statsOverride.totalProblemsSolved) : null,
+      };
+
       const res = await fetch("/api/admin/portfolio", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ totalProblemsSolved: parseInt(totalProblems) || 0 }),
+        body: JSON.stringify(payload),
       })
       
       if (res.ok) {
-        setExtraStatus({ type: "success", message: "Total problems count updated!" })
+        setExtraStatus({ type: "success", message: "Manual stats overrides updated!" })
       } else {
         setExtraStatus({ type: "error", message: "Failed to update" })
       }
@@ -176,10 +188,13 @@ export default function SettingsPage() {
         <CardHeader>
           <CardTitle className="text-white flex items-center gap-2 text-base">
             <CheckCircle className="h-4 w-4 text-[#58a6ff]" />
-            Total Problems Solved
+            Manual Stats Overrides
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-0">
+          <p className="text-[#8b949e] text-sm mb-4">
+            Leave a field <strong>empty</strong> to automatically fetch and display live data from GitHub, LeetCode, and Codeforces. Fill in a number to force that stat to display exactly what you type here.
+          </p>
           {extraStatus && (
             <div className={`flex items-center gap-2 p-3 rounded-lg text-sm mb-4 ${extraStatus.type === "success" ? "bg-[#238636]/10 border border-[#238636]/20 text-[#3fb950]" : "bg-[#f85149]/10 border border-[#f85149]/20 text-[#f85149]"}`}>
               {extraStatus.type === "success" ? <CheckCircle className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
@@ -187,24 +202,59 @@ export default function SettingsPage() {
             </div>
           )}
           <form onSubmit={handleSaveExtraProblems} className="space-y-4 max-w-md">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-[#e6edf3]">Total Count</label>
-              <Input
-                type="number"
-                value={totalProblems}
-                onChange={e => setTotalProblems(e.target.value)}
-                className={ic}
-                min="0"
-                required
-              />
-              <p className="text-[#8b949e] text-xs">This number will be displayed as your total problems solved on your portfolio, replacing the automated count.</p>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-[#e6edf3]">GitHub Repos</label>
+                <Input
+                  type="number"
+                  placeholder="e.g. 35"
+                  value={statsOverride.manualGithubRepos}
+                  onChange={e => setStatsOverride({...statsOverride, manualGithubRepos: e.target.value})}
+                  className={ic}
+                  min="0"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-[#e6edf3]">LeetCode Rating</label>
+                <Input
+                  type="number"
+                  placeholder="e.g. 1800"
+                  value={statsOverride.manualLeetcodeRating}
+                  onChange={e => setStatsOverride({...statsOverride, manualLeetcodeRating: e.target.value})}
+                  className={ic}
+                  min="0"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-[#e6edf3]">Codeforces Rating</label>
+                <Input
+                  type="number"
+                  placeholder="e.g. 1500"
+                  value={statsOverride.manualCodeforcesRating}
+                  onChange={e => setStatsOverride({...statsOverride, manualCodeforcesRating: e.target.value})}
+                  className={ic}
+                  min="0"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-[#e6edf3]">Total Problems Solved</label>
+                <Input
+                  type="number"
+                  placeholder="e.g. 800"
+                  value={statsOverride.totalProblemsSolved}
+                  onChange={e => setStatsOverride({...statsOverride, totalProblemsSolved: e.target.value})}
+                  className={ic}
+                  min="0"
+                />
+              </div>
             </div>
+            
             <Button
               type="submit"
               disabled={savingExtra}
-              className="bg-[#238636] hover:bg-[#2ea043] text-white border-0"
+              className="bg-[#238636] hover:bg-[#2ea043] text-white border-0 mt-4"
             >
-              {savingExtra ? "Saving..." : <><Save className="h-4 w-4 mr-2" />Save Stats</>}
+              {savingExtra ? "Saving..." : <><Save className="h-4 w-4 mr-2" />Save Overrides</>}
             </Button>
           </form>
         </CardContent>

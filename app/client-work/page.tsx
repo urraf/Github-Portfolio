@@ -15,6 +15,7 @@ interface ClientWork {
   techStack: string[]
   status: string
   testimonial: string
+  imageUrl?: string
   createdAt: string
 }
 
@@ -79,79 +80,102 @@ export default function ClientWorkPublicPage() {
         ) : (
           <div className="space-y-6">
             {filtered.map(entry => (
-              <Card key={entry._id} className="bg-[#161b22] border-[#30363d] hover:border-[#58a6ff]/40 transition-all group">
-                <CardContent className="p-6 sm:p-8">
-                  <div className="space-y-4">
-                    {/* Header */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                      <div className="flex items-center gap-3 flex-wrap">
-                        <h2 className="text-xl sm:text-2xl font-bold text-white">{entry.title}</h2>
-                        <Badge className={
-                          entry.status === 'Completed'
-                            ? "bg-[#238636]/20 text-[#3fb950] border-[#238636]/30"
-                            : entry.status === 'In Progress'
-                              ? "bg-[#d29922]/20 text-[#d29922] border-[#d29922]/30"
-                              : "bg-[#58a6ff]/20 text-[#58a6ff] border-[#58a6ff]/30"
-                        }>
-                          {entry.status}
-                        </Badge>
+              <Card 
+                key={entry._id} 
+                className="bg-[#161b22] border-[#30363d] hover:border-[#58a6ff]/40 transition-all duration-300 group overflow-hidden hover:-translate-y-1 hover:shadow-2xl hover:shadow-[#58a6ff]/5 relative"
+              >
+                {/* Subtle gradient overlay on hover */}
+                <div className="absolute inset-0 bg-gradient-to-br from-[#58a6ff]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                
+                <div className="flex flex-col md:flex-row">
+                  {/* Image Section - Only renders if imageUrl exists */}
+                  {entry.imageUrl && (
+                    <div className="w-full md:w-2/5 lg:w-1/3 relative border-b md:border-b-0 md:border-r border-[#30363d] overflow-hidden bg-[#0d1117] min-h-[200px] md:min-h-full flex-shrink-0">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img 
+                        src={entry.imageUrl} 
+                        alt={`${entry.title} preview`}
+                        className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105 absolute inset-0"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#161b22] via-transparent to-transparent opacity-60 md:hidden" />
+                    </div>
+                  )}
+
+                  {/* Content Section */}
+                  <CardContent className="p-6 sm:p-8 flex-1 flex flex-col justify-between z-10">
+                    <div className="space-y-5">
+                      {/* Header */}
+                      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                        <div className="space-y-1.5 flex-1">
+                          <div className="flex items-center gap-3 flex-wrap">
+                            <h2 className="text-xl sm:text-2xl font-bold text-white group-hover:text-[#58a6ff] transition-colors">{entry.title}</h2>
+                            <Badge className={
+                              entry.status === 'Completed'
+                                ? "bg-[#238636]/10 text-[#3fb950] border-[#238636]/30 shadow-[0_0_10px_rgba(35,134,54,0.1)]"
+                                : entry.status === 'In Progress'
+                                  ? "bg-[#d29922]/10 text-[#d29922] border-[#d29922]/30 shadow-[0_0_10px_rgba(210,153,34,0.1)]"
+                                  : "bg-[#58a6ff]/10 text-[#58a6ff] border-[#58a6ff]/30 shadow-[0_0_10px_rgba(88,166,255,0.1)]"
+                            }>
+                              {entry.status}
+                            </Badge>
+                          </div>
+                          {entry.clientName && (
+                            <p className="text-[#8b949e] text-sm flex items-center gap-1.5">
+                              For <span className="text-[#e6edf3] font-medium">{entry.clientName}</span>
+                            </p>
+                          )}
+                        </div>
+                        
+                        {entry.projectUrl && (
+                          <Link
+                            href={entry.projectUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 text-sm text-[#58a6ff] bg-[#58a6ff]/10 hover:bg-[#58a6ff]/20 px-3 py-1.5 rounded-full transition-all font-medium border border-[#58a6ff]/20 flex-shrink-0"
+                          >
+                            <ExternalLink className="h-3.5 w-3.5" />
+                            Visit Live
+                          </Link>
+                        )}
                       </div>
-                      {entry.projectUrl && (
-                        <Link
-                          href={entry.projectUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 text-sm text-[#58a6ff] hover:text-[#79c0ff] hover:underline transition-colors font-medium"
-                        >
-                          <ExternalLink className="h-4 w-4" />
-                          Visit Project
-                        </Link>
+
+                      {/* Description */}
+                      {entry.description && (
+                        <p className="text-[#c9d1d9] leading-relaxed text-[15px]">{entry.description}</p>
+                      )}
+
+                      {/* Tech Stack */}
+                      {entry.techStack.length > 0 && (
+                        <div className="flex flex-wrap gap-2 pt-1">
+                          {entry.techStack.map((tech, i) => (
+                            <Badge
+                              key={i}
+                              variant="secondary"
+                              className="bg-[#21262d]/50 backdrop-blur-sm text-[#79c0ff] border-[#30363d] text-xs hover:bg-[#30363d] transition-colors py-1 px-3"
+                            >
+                              {tech}
+                            </Badge>
+                          ))}
+                        </div>
                       )}
                     </div>
 
-                    {/* Client */}
-                    {entry.clientName && (
-                      <p className="text-[#8b949e] text-sm">
-                        Client: <span className="text-[#e6edf3] font-medium">{entry.clientName}</span>
-                      </p>
-                    )}
-
-                    {/* Description */}
-                    {entry.description && (
-                      <p className="text-[#e6edf3] leading-relaxed">{entry.description}</p>
-                    )}
-
-                    {/* Tech Stack */}
-                    {entry.techStack.length > 0 && (
-                      <div className="flex flex-wrap gap-2">
-                        {entry.techStack.map((tech, i) => (
-                          <Badge
-                            key={i}
-                            variant="secondary"
-                            className="bg-[#21262d] text-[#58a6ff] border-[#30363d] text-xs hover:bg-[#30363d] transition-colors py-1 px-2.5"
-                          >
-                            {tech}
-                          </Badge>
-                        ))}
-                      </div>
-                    )}
-
                     {/* Testimonial */}
                     {entry.testimonial && (
-                      <div className="border-l-2 border-[#30363d] pl-4 mt-4">
-                        <div className="flex items-start gap-2">
-                          <Quote className="h-4 w-4 text-[#7d8590] mt-0.5 flex-shrink-0" />
-                          <p className="text-[#8b949e] italic text-sm leading-relaxed">
-                            &ldquo;{entry.testimonial}&rdquo;
-                          </p>
+                      <div className="mt-6 pt-5 border-t border-[#30363d]/50 relative">
+                        <div className="absolute -top-3 left-4 bg-[#161b22] px-2">
+                          <Quote className="h-4 w-4 text-[#58a6ff]/50" />
                         </div>
+                        <p className="text-[#8b949e] italic text-[15px] leading-relaxed pl-2">
+                          &ldquo;{entry.testimonial}&rdquo;
+                        </p>
                         {entry.clientName && (
-                          <p className="text-[#58a6ff] text-xs mt-2 ml-6">— {entry.clientName}</p>
+                          <p className="text-[#58a6ff] text-xs mt-2.5 pl-2 font-medium tracking-wide uppercase">— {entry.clientName}</p>
                         )}
                       </div>
                     )}
-                  </div>
-                </CardContent>
+                  </CardContent>
+                </div>
               </Card>
             ))}
           </div>

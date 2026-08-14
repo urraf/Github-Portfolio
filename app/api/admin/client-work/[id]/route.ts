@@ -19,19 +19,48 @@ export async function PUT(
       return NextResponse.json({ error: 'Invalid ID' }, { status: 400 });
     }
 
-    const body = await request.json();
-    const { title, clientName, projectUrl, description, techStack, cost, status, testimonial } = body;
+    const formData = await request.formData();
+    const title = formData.get('title') as string | null;
+    const clientName = formData.get('clientName') as string | null;
+    const projectUrl = formData.get('projectUrl') as string | null;
+    const description = formData.get('description') as string | null;
+    const techStack = formData.getAll('techStack') as string[];
+    const cost = formData.get('cost') as string | null;
+    const status = formData.get('status') as string | null;
+    const testimonial = formData.get('testimonial') as string | null;
+    const imageFile = formData.get('image') as File | null;
 
     const db = await getDb();
     const updateFields: Record<string, unknown> = {};
-    if (title !== undefined) updateFields.title = title;
-    if (clientName !== undefined) updateFields.clientName = clientName;
-    if (projectUrl !== undefined) updateFields.projectUrl = projectUrl;
-    if (description !== undefined) updateFields.description = description;
-    if (techStack !== undefined) updateFields.techStack = techStack;
-    if (cost !== undefined) updateFields.cost = cost;
-    if (status !== undefined) updateFields.status = status;
-    if (testimonial !== undefined) updateFields.testimonial = testimonial;
+    if (title !== null) updateFields.title = title;
+    if (clientName !== null) updateFields.clientName = clientName;
+    if (projectUrl !== null) updateFields.projectUrl = projectUrl;
+    if (description !== null) updateFields.description = description;
+    // techStack is always an array from getAll, even if empty. Only update if it has items, 
+    // or if the frontend explicitly sends an empty array indicator.
+    // Since FormData getAll('techStack') is empty if not appended, we'll check if the form had the 'techStack' key.
+    if (formData.has('techStack')) updateFields.techStack = techStack;
+    
+    if (cost !== null) updateFields.cost = cost;
+    if (status !== null) updateFields.status = status;
+    if (testimonial !== null) updateFields.testimonial = testimonial;
+    
+    if (imageFile && imageFile.size > 0) {
+      try {
+        const bytes = await imageFile.arrayBuffer();
+        const buffer = Buffer.from(bytes);
+        
+        const { uploadBuffer } = await import('@/lib/cloudinary');
+        const result = await uploadBuffer(buffer, {
+          folder: 'client_work',
+        });
+        updateFields.imageUrl = result.url;
+      } catch (uploadError) {
+        console.error('Error uploading image to Cloudinary:', uploadError);
+        return NextResponse.json({ error: 'Failed to upload image' }, { status: 500 });
+      }
+    }
+
     updateFields.updatedAt = new Date();
 
     const result = await db.collection('clientWork').updateOne(
