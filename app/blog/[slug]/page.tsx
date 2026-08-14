@@ -4,7 +4,7 @@ import { useParams } from "next/navigation"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
-import { ArrowLeft, Calendar, Clock, BookOpen } from "lucide-react"
+import { ArrowLeft, Calendar, Clock, BookOpen, ChevronRight } from "lucide-react"
 import AnimatedBackground from "@/components/animated-background"
 import MarkdownRenderer from "@/components/markdown-renderer"
 import BlogComments from "@/components/blog-comments"
@@ -17,6 +17,7 @@ interface Blog {
 export default function BlogPostPage() {
   const params = useParams()
   const [blog, setBlog] = useState<Blog | null>(null)
+  const [recommendedBlogs, setRecommendedBlogs] = useState<Blog[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -25,6 +26,12 @@ export default function BlogPostPage() {
       .then((blogs: Blog[]) => {
         const found = blogs.find(b => b.slug === params.slug)
         setBlog(found || null)
+        
+        // Pick 4 random recommended blogs excluding the current one
+        const others = blogs.filter(b => b.slug !== params.slug)
+        const shuffled = [...others].sort(() => 0.5 - Math.random())
+        setRecommendedBlogs(shuffled.slice(0, 4))
+
         setLoading(false)
       })
       .catch(() => setLoading(false))
@@ -75,10 +82,13 @@ export default function BlogPostPage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-4xl px-4 py-10 sm:py-14 relative z-10">
-        <article>
-          {/* Article Header */}
-          <header className="mb-10 text-center">
+      <main className="mx-auto max-w-7xl px-4 py-10 sm:py-14 relative z-10 flex flex-col lg:flex-row gap-10">
+        
+        {/* Left Column - Main Content */}
+        <div className="flex-1 lg:max-w-4xl w-full">
+          <article>
+            {/* Article Header */}
+            <header className="mb-10 text-center lg:text-left">
             {blog.tags.length > 0 && (
               <div className="flex flex-wrap justify-center gap-2 mb-6">
                 {blog.tags.map((tag, i) => (
@@ -89,7 +99,7 @@ export default function BlogPostPage() {
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight tracking-tight">
               {blog.title}
             </h1>
-            <div className="flex items-center justify-center gap-4 text-sm text-[#7d8590]">
+            <div className="flex items-center justify-center lg:justify-start gap-4 text-sm text-[#7d8590]">
               <div className="flex items-center gap-2">
                 <Avatar className="h-7 w-7 border border-[#30363d]">
                   <AvatarImage src="/profile2.jpeg" alt="Author" className="object-cover" />
@@ -134,21 +144,92 @@ export default function BlogPostPage() {
 
           {/* Comments Section */}
           <BlogComments blogId={blog.id} />
-        </article>
-
-        {/* Bottom Navigation */}
-        <div className="mt-14 pt-8 border-t border-[#21262d]">
-          <div className="flex items-center justify-between">
-            <Link href="/blog" className="text-[#58a6ff] hover:text-[#79c0ff] inline-flex items-center gap-2 font-medium transition-colors">
-              <ArrowLeft className="h-4 w-4" />
-              All Posts
-            </Link>
-            <Link href="/" className="text-[#7d8590] hover:text-white text-sm transition-colors">
-              View Portfolio →
-            </Link>
-          </div>
+          </article>
         </div>
+
+        {/* Right Column - Sidebar */}
+        <aside className="hidden lg:block w-[350px] flex-shrink-0">
+          <div className="sticky top-24 space-y-8">
+            <div className="bg-[#161b22]/50 border border-[#30363d] rounded-2xl p-6 backdrop-blur-sm">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="h-4 w-1 bg-[#58a6ff] rounded-full" />
+                <h3 className="text-lg font-bold text-white">Author</h3>
+              </div>
+              <div className="flex items-center gap-4 mb-4">
+                <Avatar className="h-14 w-14 border border-[#30363d]">
+                  <AvatarImage src="/profile2.jpeg" alt="Author" className="object-cover" />
+                  <AvatarFallback className="bg-[#21262d] text-white">F</AvatarFallback>
+                </Avatar>
+                <div>
+                  <h4 className="font-semibold text-white">Farhan</h4>
+                  <p className="text-sm text-[#7d8590]">Software Engineer</p>
+                </div>
+              </div>
+              <p className="text-sm text-[#8b949e] leading-relaxed">
+                Passionate about building scalable applications, AI integrations, and sleek user interfaces.
+              </p>
+              <Link href="/" className="mt-4 inline-block text-[#58a6ff] hover:text-[#79c0ff] text-sm font-medium transition-colors">
+                View full portfolio →
+              </Link>
+            </div>
+
+            <div className="bg-[#161b22]/50 border border-[#30363d] rounded-2xl p-6 backdrop-blur-sm">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="h-4 w-1 bg-[#3fb950] rounded-full" />
+                <h3 className="text-lg font-bold text-white">Recommended</h3>
+              </div>
+              <div className="space-y-6">
+                {recommendedBlogs.slice(0, 3).map(rec => (
+                  <Link href={`/blog/${rec.slug}`} key={rec.id} className="group flex gap-4 block">
+                    <div className="h-16 w-16 rounded-lg overflow-hidden flex-shrink-0 border border-[#30363d] relative">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={rec.imageUrl} alt="" className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-sm font-medium text-[#e6edf3] group-hover:text-[#58a6ff] transition-colors line-clamp-2 leading-snug">
+                        {rec.title}
+                      </h4>
+                      <p className="text-xs text-[#7d8590] mt-1">{new Date(rec.publishedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+        </aside>
       </main>
+
+      {/* Bottom Recommended Grid for Mobile/Tablet or just extra engagement */}
+      <section className="mx-auto max-w-7xl px-4 py-12 relative z-10 border-t border-[#21262d]">
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-2xl font-bold text-white">More Articles</h2>
+          <Link href="/blog" className="text-[#58a6ff] hover:text-[#79c0ff] flex items-center gap-1 text-sm font-medium transition-colors">
+            View all <ChevronRight className="h-4 w-4" />
+          </Link>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {recommendedBlogs.map(rec => (
+            <Link href={`/blog/${rec.slug}`} key={rec.id} className="group flex flex-col bg-[#161b22]/40 border border-[#30363d] rounded-xl overflow-hidden hover:border-[#58a6ff]/50 hover:-translate-y-1 transition-all duration-300">
+              <div className="h-40 relative overflow-hidden">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={rec.imageUrl} alt="" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+              </div>
+              <div className="p-4 flex-1 flex flex-col">
+                <div className="flex flex-wrap gap-1 mb-3">
+                  {rec.tags.slice(0, 2).map(tag => (
+                    <span key={tag} className="text-[10px] uppercase tracking-wider font-semibold text-[#58a6ff] bg-[#58a6ff]/10 px-2 py-0.5 rounded-sm">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                <h3 className="font-semibold text-[#e6edf3] group-hover:text-[#58a6ff] transition-colors line-clamp-2 text-sm leading-snug mb-2 flex-1">
+                  {rec.title}
+                </h3>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
 
       <footer className="border-t border-[#21262d] bg-[#010409] px-4 py-8 relative z-10">
         <div className="mx-auto max-w-4xl text-center">

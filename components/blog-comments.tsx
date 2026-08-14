@@ -105,8 +105,40 @@ export default function BlogComments({ blogId }: { blogId: string }) {
         <h2 className="text-2xl font-bold text-white">Discussion ({comments.length})</h2>
       </div>
 
+      {/* Comment List */}
+      <div className="space-y-6 mb-12">
+        {loading ? (
+          <div className="flex justify-center py-8">
+            <div className="h-6 w-6 border-2 border-[#58a6ff]/30 border-t-[#58a6ff] rounded-full animate-spin" />
+          </div>
+        ) : comments.length === 0 ? (
+          <div className="text-center py-8 text-[#7d8590]">
+            No comments yet. Be the first to share your thoughts!
+          </div>
+        ) : (
+          comments.map((comment) => (
+            <div key={comment.id} className="flex gap-4 p-4 rounded-xl hover:bg-[#21262d]/30 transition-colors border border-transparent hover:border-[#30363d]/50">
+              <Avatar className="h-10 w-10 border border-[#30363d] flex-shrink-0">
+                <AvatarFallback className="bg-[#21262d] text-[#e6edf3] font-medium">
+                  {comment.name.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="font-semibold text-[#e6edf3]">{comment.name}</span>
+                  <span className="text-xs text-[#7d8590]">
+                    {new Date(comment.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                  </span>
+                </div>
+                <p className="text-[#8b949e] whitespace-pre-wrap text-sm leading-relaxed">{comment.content}</p>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
       {/* Comment Form */}
-      <form onSubmit={handleSubmit} className="mb-12 bg-[#0d1117] p-6 rounded-xl border border-[#30363d]">
+      <form onSubmit={handleSubmit} className="bg-[#0d1117] p-6 rounded-xl border border-[#30363d]">
         <h3 className="text-lg font-semibold text-white mb-4">Leave a comment</h3>
         <p className="text-sm text-[#7d8590] mb-6">No account required. Share your thoughts anonymously.</p>
         
@@ -169,38 +201,6 @@ export default function BlogComments({ blogId }: { blogId: string }) {
           </div>
         </div>
       </form>
-
-      {/* Comment List */}
-      <div className="space-y-6">
-        {loading ? (
-          <div className="flex justify-center py-8">
-            <div className="h-6 w-6 border-2 border-[#58a6ff]/30 border-t-[#58a6ff] rounded-full animate-spin" />
-          </div>
-        ) : comments.length === 0 ? (
-          <div className="text-center py-8 text-[#7d8590]">
-            No comments yet. Be the first to share your thoughts!
-          </div>
-        ) : (
-          comments.map((comment) => (
-            <div key={comment.id} className="flex gap-4 p-4 rounded-xl hover:bg-[#21262d]/30 transition-colors border border-transparent hover:border-[#30363d]/50">
-              <Avatar className="h-10 w-10 border border-[#30363d] flex-shrink-0">
-                <AvatarFallback className="bg-[#21262d] text-[#e6edf3] font-medium">
-                  {comment.name.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="font-semibold text-[#e6edf3]">{comment.name}</span>
-                  <span className="text-xs text-[#7d8590]">
-                    {new Date(comment.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-                  </span>
-                </div>
-                <p className="text-[#8b949e] whitespace-pre-wrap text-sm leading-relaxed">{comment.content}</p>
-              </div>
-            </div>
-          ))
-        )}
-      </div>
     </div>
   )
 }
