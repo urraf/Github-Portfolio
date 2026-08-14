@@ -1,62 +1,102 @@
-"use client"
-import { useEffect, useState } from "react"
-import { useParams } from "next/navigation"
+import { Metadata } from 'next'
 import Link from "next/link"
+import { notFound } from 'next/navigation'
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { ArrowLeft, Calendar, Clock, BookOpen, ChevronRight } from "lucide-react"
 import AnimatedBackground from "@/components/animated-background"
 import MarkdownRenderer from "@/components/markdown-renderer"
 import BlogComments from "@/components/blog-comments"
+import BlogLikeButton from "@/components/blog-like-button"
+import TableOfContents from "@/components/table-of-contents"
+import { getDb } from '@/lib/mongodb'
 
 interface Blog {
-  id: string; title: string; slug: string; content: string; excerpt: string
-  tags: string[]; publishedAt: string; published: boolean; imageUrl?: string
+  _id?: any;
+  id?: string;
+  title: string;
+  slug: string;
+  content: string;
+  excerpt: string;
+  tags: string[];
+  publishedAt: string;
+  published: boolean;
+  imageUrl?: string;
+  likes?: number;
 }
 
-export default function BlogPostPage() {
-  const params = useParams()
-  const [blog, setBlog] = useState<Blog | null>(null)
-  const [recommendedBlogs, setRecommendedBlogs] = useState<Blog[]>([])
-  const [loading, setLoading] = useState(true)
+// Helper to fetch data
+async function getBlogData(slug: string) {
+  const db = await getDb()
+  const blogs = await db.collection('blogs').find({ public: { $ne: false }, published: true }).toArray() as any[]
+  
+  const mappedBlogs = blogs.map(b => ({
+    ...b,
+    id: b._id.toString(),
+    _id: undefined
+  })) as Blog[]
 
-  useEffect(() => {
-    fetch("/api/admin/blogs?public=true")
-      .then(r => r.json())
-      .then((blogs: Blog[]) => {
-        const found = blogs.find(b => b.slug === params.slug)
-        setBlog(found || null)
-        
-        // Pick 4 random recommended blogs excluding the current one
-        const others = blogs.filter(b => b.slug !== params.slug)
-        const shuffled = [...others].sort(() => 0.5 - Math.random())
-        setRecommendedBlogs(shuffled.slice(0, 4))
+  const blog = mappedBlogs.find(b => b.slug === slug)
+  if (!blog) return null
 
-        setLoading(false)
-      })
-      .catch(() => setLoading(false))
-  }, [params.slug])
+  const others = mappedBlogs.filter(b => b.slug !== slug)
+  const shuffled = [...others].sort(() => 0.5 - Math.random())
+  const recommendedBlogs = shuffled.slice(0, 4)
 
-  const estimateReadTime = (content: string) => Math.max(1, Math.ceil(content.split(/\s+/).length / 200))
+  return { blog, recommendedBlogs }
+}
 
-  if (loading) return (
-    <div className="min-h-screen bg-[#0d1117] flex items-center justify-center">
-      <div className="h-8 w-8 border-2 border-[#58a6ff]/30 border-t-[#58a6ff] rounded-full animate-spin" />
-    </div>
-  )
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const resolvedParams = await params;
+  const data = await getBlogData(resolvedParams.slug)
+  
+  if (!data?.blog) {
+    return { title: 'Post Not Found | Farhan' }
+  }
 
-  if (!blog) return (
-    <div className="min-h-screen bg-[#0d1117] flex items-center justify-center text-center p-4">
-      <div>
-        <BookOpen className="h-16 w-16 text-[#21262d] mx-auto mb-6" />
-        <h1 className="text-2xl font-bold text-white mb-2">Post Not Found</h1>
-        <p className="text-[#7d8590] mb-6">This blog post doesn&apos;t exist or has been removed.</p>
-        <Link href="/blog" className="inline-flex items-center gap-2 text-[#58a6ff] hover:text-[#79c0ff] transition-colors font-medium">
-          <ArrowLeft className="h-4 w-4" />Back to Blog
-        </Link>
+  const blog = data.blog
+
+  return {
+    title: `${blog.title} | Farhan's Blog`,
+    description: blog.excerpt,
+    openGraph: {
+      title: blog.title,
+      description: blog.excerpt,
+      type: 'article',
+      publishedTime: blog.publishedAt,
+      authors: ['Farhan'],
+      images: blog.imageUrl ? [blog.imageUrl] : [],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: blog.title,
+      description: blog.excerpt,
+      images: blog.imageUrl ? [blog.imageUrl] : [],
+    }
+  }
+}
+
+export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
+  const resolvedParams = await params;
+  const data = await getBlogData(resolvedParams.slug)
+
+  if (!data?.blog) {
+    return (
+      <div className="min-h-screen bg-[#0d1117] flex items-center justify-center text-center p-4">
+        <div>
+          <BookOpen className="h-16 w-16 text-[#21262d] mx-auto mb-6" />
+          <h1 className="text-2xl font-bold text-white mb-2">Post Not Found</h1>
+          <p className="text-[#7d8590] mb-6">This blog post doesn&apos;t exist or has been removed.</p>
+          <Link href="/blog" className="inline-flex items-center gap-2 text-[#58a6ff] hover:text-[#79c0ff] transition-colors font-medium">
+            <ArrowLeft className="h-4 w-4" />Back to Blog
+          </Link>
+        </div>
       </div>
-    </div>
-  )
+    )
+  }
+
+  const { blog, recommendedBlogs } = data
+  const estimateReadTime = (content: string) => Math.max(1, Math.ceil(content.split(/\s+/).length / 200))
 
   return (
     <div className="min-h-screen bg-[#0d1117] text-[#e6edf3] relative">
@@ -89,67 +129,72 @@ export default function BlogPostPage() {
           <article>
             {/* Article Header */}
             <header className="mb-10 text-center lg:text-left">
-            {blog.tags.length > 0 && (
-              <div className="flex flex-wrap justify-center gap-2 mb-6">
-                {blog.tags.map((tag, i) => (
-                  <Badge key={i} className="bg-[#21262d] text-[#58a6ff] border-[#30363d] text-xs">{tag}</Badge>
-                ))}
+              {blog.tags.length > 0 && (
+                <div className="flex flex-wrap justify-center lg:justify-start gap-2 mb-6">
+                  {blog.tags.map((tag, i) => (
+                    <Badge key={i} className="bg-[#21262d] text-[#58a6ff] border-[#30363d] text-xs">{tag}</Badge>
+                  ))}
+                </div>
+              )}
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight tracking-tight">
+                {blog.title}
+              </h1>
+              <div className="flex items-center justify-center lg:justify-start gap-4 text-sm text-[#7d8590]">
+                <div className="flex items-center gap-2">
+                  <Avatar className="h-7 w-7 border border-[#30363d]">
+                    <AvatarImage src="/profile2.jpeg" alt="Author" className="object-cover" />
+                    <AvatarFallback className="bg-[#21262d] text-white text-xs">F</AvatarFallback>
+                  </Avatar>
+                  <span className="font-medium text-[#e6edf3]">Farhan</span>
+                </div>
+                <span className="text-[#30363d]">•</span>
+                <span className="flex items-center gap-1.5">
+                  <Calendar className="h-3.5 w-3.5" />
+                  {new Date(blog.publishedAt).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
+                </span>
+                <span className="text-[#30363d]">•</span>
+                <span className="flex items-center gap-1.5">
+                  <Clock className="h-3.5 w-3.5" />
+                  {estimateReadTime(blog.content)} min read
+                </span>
+                <span className="text-[#30363d]">•</span>
+                <BlogLikeButton blogId={blog.id as string} initialLikes={blog.likes || 0} />
+              </div>
+            </header>
+
+            {/* Hero Image */}
+            {blog.imageUrl && (
+              <div className="w-full h-64 sm:h-80 md:h-96 relative overflow-hidden rounded-2xl mb-12 shadow-2xl border border-[#30363d]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img 
+                  src={blog.imageUrl} 
+                  alt={blog.title}
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0d1117]/80 to-transparent pointer-events-none" />
               </div>
             )}
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight tracking-tight">
-              {blog.title}
-            </h1>
-            <div className="flex items-center justify-center lg:justify-start gap-4 text-sm text-[#7d8590]">
-              <div className="flex items-center gap-2">
-                <Avatar className="h-7 w-7 border border-[#30363d]">
-                  <AvatarImage src="/profile2.jpeg" alt="Author" className="object-cover" />
-                  <AvatarFallback className="bg-[#21262d] text-white text-xs">F</AvatarFallback>
-                </Avatar>
-                <span className="font-medium text-[#e6edf3]">Farhan</span>
-              </div>
-              <span className="text-[#30363d]">•</span>
-              <span className="flex items-center gap-1.5">
-                <Calendar className="h-3.5 w-3.5" />
-                {new Date(blog.publishedAt).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Clock className="h-3.5 w-3.5" />
-                {estimateReadTime(blog.content)} min read
-              </span>
+
+            {/* Divider if no image */}
+            {!blog.imageUrl && (
+              <div className="w-16 h-0.5 bg-gradient-to-r from-[#58a6ff] to-[#3fb950] mx-auto mb-10 rounded-full" />
+            )}
+
+            {/* Article Body */}
+            <div className="bg-[#161b22]/80 border border-[#30363d] rounded-2xl p-6 sm:p-10 lg:p-12 shadow-xl backdrop-blur-sm prose prose-invert max-w-none prose-pre:bg-[#0d1117] prose-pre:border prose-pre:border-[#30363d] prose-a:text-[#58a6ff] hover:prose-a:text-[#79c0ff] prose-img:rounded-xl">
+              <MarkdownRenderer content={blog.content} />
             </div>
-          </header>
 
-          {/* Hero Image */}
-          {blog.imageUrl && (
-            <div className="w-full h-64 sm:h-80 md:h-96 relative overflow-hidden rounded-2xl mb-12 shadow-2xl border border-[#30363d]">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img 
-                src={blog.imageUrl} 
-                alt={blog.title}
-                className="absolute inset-0 w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0d1117]/80 to-transparent pointer-events-none" />
-            </div>
-          )}
-
-          {/* Divider if no image */}
-          {!blog.imageUrl && (
-            <div className="w-16 h-0.5 bg-gradient-to-r from-[#58a6ff] to-[#3fb950] mx-auto mb-10 rounded-full" />
-          )}
-
-          {/* Article Body */}
-          <div className="bg-[#161b22]/80 border border-[#30363d] rounded-2xl p-6 sm:p-10 lg:p-12 shadow-xl backdrop-blur-sm prose prose-invert max-w-none prose-pre:bg-[#0d1117] prose-pre:border prose-pre:border-[#30363d] prose-a:text-[#58a6ff] hover:prose-a:text-[#79c0ff] prose-img:rounded-xl">
-            <MarkdownRenderer content={blog.content} />
-          </div>
-
-          {/* Comments Section */}
-          <BlogComments blogId={blog.id} />
+            {/* Comments Section */}
+            <BlogComments blogId={blog.id as string} />
           </article>
         </div>
 
         {/* Right Column - Sidebar */}
         <aside className="hidden lg:block w-[350px] flex-shrink-0">
           <div className="sticky top-24 space-y-8">
+            <TableOfContents content={blog.content} />
+            
             <div className="bg-[#161b22]/50 border border-[#30363d] rounded-2xl p-6 backdrop-blur-sm">
               <div className="flex items-center gap-3 mb-6">
                 <div className="h-4 w-1 bg-[#58a6ff] rounded-full" />
@@ -216,7 +261,7 @@ export default function BlogPostPage() {
               </div>
               <div className="p-4 flex-1 flex flex-col">
                 <div className="flex flex-wrap gap-1 mb-3">
-                  {rec.tags.slice(0, 2).map(tag => (
+                  {rec.tags.slice(0, 2).map((tag: string) => (
                     <span key={tag} className="text-[10px] uppercase tracking-wider font-semibold text-[#58a6ff] bg-[#58a6ff]/10 px-2 py-0.5 rounded-sm">
                       {tag}
                     </span>

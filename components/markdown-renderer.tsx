@@ -110,10 +110,19 @@ export default function MarkdownRenderer({ content, className = "", isEditable =
       }
     )
 
-    // Headers
-    html = html.replace(/^### (.*$)/gm, '<h3 class="text-lg font-semibold text-white mt-8 mb-3 flex items-center gap-2"><span class="w-1 h-5 bg-[#58a6ff] rounded-full inline-block"></span>$1</h3>')
-    html = html.replace(/^## (.*$)/gm, '<h2 class="text-xl font-bold text-white mt-10 mb-4 pb-2 border-b border-[#21262d]">$1</h2>')
-    html = html.replace(/^# (.*$)/gm, '<h1 class="text-2xl sm:text-3xl font-bold text-white mt-10 mb-6">$1</h1>')
+    // Headers with generated IDs for TOC
+    html = html.replace(/^### (.*$)/gm, (_, title) => {
+      const id = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+      return `<h3 id="${id}" class="text-lg font-semibold text-white mt-8 mb-3 flex items-center gap-2 scroll-mt-24"><span class="w-1 h-5 bg-[#58a6ff] rounded-full inline-block"></span>${title}</h3>`
+    })
+    html = html.replace(/^## (.*$)/gm, (_, title) => {
+      const id = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+      return `<h2 id="${id}" class="text-xl font-bold text-white mt-10 mb-4 pb-2 border-b border-[#21262d] scroll-mt-24">${title}</h2>`
+    })
+    html = html.replace(/^# (.*$)/gm, (_, title) => {
+      const id = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+      return `<h1 id="${id}" class="text-2xl sm:text-3xl font-bold text-white mt-10 mb-6 scroll-mt-24">${title}</h1>`
+    })
 
     // Bold and italic
     html = html.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em class="text-white">$1</em></strong>')

@@ -4,17 +4,20 @@ import Link from "next/link"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
-import { BookOpen, ArrowLeft, Calendar, Clock, ArrowRight } from "lucide-react"
+import { BookOpen, ArrowLeft, Calendar, Clock, ArrowRight, Search, Heart } from "lucide-react"
 import AnimatedBackground from "@/components/animated-background"
+import BlogLikeButton from "@/components/blog-like-button"
 
 interface Blog {
   id: string; title: string; slug: string; content: string; excerpt: string
-  tags: string[]; publishedAt: string; published: boolean; imageUrl?: string
+  tags: string[]; publishedAt: string; published: boolean; imageUrl?: string; likes?: number
 }
 
 export default function BlogListPage() {
   const [blogs, setBlogs] = useState<Blog[]>([])
   const [loading, setLoading] = useState(true)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [selectedTag, setSelectedTag] = useState<string | null>(null)
 
   useEffect(() => {
     fetch("/api/admin/blogs?public=true")
@@ -24,6 +27,17 @@ export default function BlogListPage() {
   }, [])
 
   const estimateReadTime = (content: string) => Math.max(1, Math.ceil(content.split(/\s+/).length / 200))
+
+  // Extract all unique tags
+  const allTags = Array.from(new Set(blogs.flatMap(blog => blog.tags))).sort()
+
+  // Filter blogs
+  const filteredBlogs = blogs.filter(blog => {
+    const matchesSearch = blog.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          blog.excerpt?.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesTag = selectedTag ? blog.tags.includes(selectedTag) : true
+    return matchesSearch && matchesTag
+  })
 
   return (
     <div className="min-h-screen bg-[#0d1117] text-[#e6edf3] relative">
@@ -59,13 +73,55 @@ export default function BlogListPage() {
           <p className="text-[#8b949e] text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed">
             Deep dives into software engineering, system architecture, and building scalable systems for the future.
           </p>
+
+          {/* Search & Filters */}
+          <div className="mt-12 max-w-3xl mx-auto space-y-6">
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-[#7d8590]" />
+              <input 
+                type="text" 
+                placeholder="Search articles..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-[#161b22]/80 border border-[#30363d] rounded-full py-4 pl-12 pr-6 text-white placeholder:text-[#7d8590] focus:outline-none focus:border-[#58a6ff] focus:ring-1 focus:ring-[#58a6ff] transition-all"
+              />
+            </div>
+            
+            {allTags.length > 0 && (
+              <div className="flex flex-wrap items-center justify-center gap-2">
+                <button
+                  onClick={() => setSelectedTag(null)}
+                  className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors border ${
+                    selectedTag === null 
+                      ? 'bg-[#58a6ff]/10 text-[#58a6ff] border-[#58a6ff]/30' 
+                      : 'bg-[#161b22] text-[#7d8590] border-[#30363d] hover:border-[#484f58] hover:text-[#c9d1d9]'
+                  }`}
+                >
+                  All
+                </button>
+                {allTags.map(tag => (
+                  <button
+                    key={tag}
+                    onClick={() => setSelectedTag(tag)}
+                    className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors border ${
+                      selectedTag === tag 
+                        ? 'bg-[#58a6ff]/10 text-[#58a6ff] border-[#58a6ff]/30' 
+                        : 'bg-[#161b22] text-[#7d8590] border-[#30363d] hover:border-[#484f58] hover:text-[#c9d1d9]'
+                    }`}
+                  >
+                    {tag}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         {loading ? (
           <div className="flex items-center justify-center py-20">
             <div className="h-10 w-10 border-4 border-[#58a6ff]/30 border-t-[#58a6ff] rounded-full animate-spin" />
           </div>
-        ) : blogs.length === 0 ? (
+        ) : filteredBlogs.length === 0 ? (
           <Card className="bg-[#161b22] border-[#30363d] shadow-xl max-w-2xl mx-auto">
             <CardContent className="p-16 text-center">
               <BookOpen className="h-16 w-16 text-[#21262d] mx-auto mb-6" />
@@ -77,9 +133,9 @@ export default function BlogListPage() {
           <div className="space-y-12">
             {/* Magazine Layout */}
             
-            {/* Top Featured Post - Full Width */}
-            {blogs.length > 0 && (
-              <Link href={`/blog/${blogs[0].slug}`}>
+            {/* Top Featured Post - Full Width (Only show if no search/filter active) */}
+            {filteredBlogs.length > 0 && !searchQuery && !selectedTag && (
+              <Link href={`/blog/${filteredBlogs[0].slug}`}>
                 <Card className="bg-[#161b22] border-[#30363d] hover:border-[#58a6ff]/50 transition-all duration-500 group cursor-pointer overflow-hidden shadow-2xl hover:shadow-[#58a6ff]/10">
                   <div className="flex flex-col md:flex-row">
                     {/* Featured Image */}
@@ -87,8 +143,8 @@ export default function BlogListPage() {
                       <div className="w-full md:w-1/2 lg:w-3/5 h-64 md:h-auto relative overflow-hidden bg-[#0d1117]">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img 
-                          src={blogs[0].imageUrl} 
-                          alt={blogs[0].title}
+                          src={filteredBlogs[0].imageUrl} 
+                          alt={filteredBlogs[0].title}
                           className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                         />
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[#161b22] hidden md:block" />
@@ -106,20 +162,26 @@ export default function BlogListPage() {
                         <Badge className="bg-[#58a6ff]/10 text-[#58a6ff] border-[#58a6ff]/20 text-xs px-2.5 py-0.5 shadow-[0_0_10px_rgba(88,166,255,0.1)]">Featured</Badge>
                         <span className="text-[#484f58] text-xs">•</span>
                         <span className="text-xs text-[#7d8590]">
-                          {new Date(blogs[0].publishedAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+                          {new Date(filteredBlogs[0].publishedAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
                         </span>
                       </div>
                       <h2 className="text-3xl sm:text-4xl font-extrabold text-white group-hover:text-[#58a6ff] transition-colors mb-4 leading-tight">
-                        {blogs[0].title}
+                        {filteredBlogs[0].title}
                       </h2>
-                      {blogs[0].excerpt && (
-                        <p className="text-[#8b949e] text-base leading-relaxed mb-6 line-clamp-3">{blogs[0].excerpt}</p>
+                      {filteredBlogs[0].excerpt && (
+                        <p className="text-[#8b949e] text-base leading-relaxed mb-6 line-clamp-3">{filteredBlogs[0].excerpt}</p>
                       )}
                       <div className="mt-auto pt-4 flex items-center justify-between border-t border-[#30363d]/50">
-                        <span className="flex items-center gap-1 text-xs text-[#7d8590]">
-                          <Clock className="h-3.5 w-3.5" />
-                          {estimateReadTime(blogs[0].content)} min read
-                        </span>
+                        <div className="flex items-center gap-4">
+                          <span className="flex items-center gap-1 text-xs text-[#7d8590]">
+                            <Clock className="h-3.5 w-3.5" />
+                            {estimateReadTime(filteredBlogs[0].content)} min read
+                          </span>
+                          <span className="flex items-center gap-1 text-xs text-[#7d8590]">
+                            <Heart className="h-3.5 w-3.5" />
+                            {filteredBlogs[0].likes || 0}
+                          </span>
+                        </div>
                         <span className="text-[#58a6ff] text-sm font-semibold group-hover:translate-x-1 transition-transform inline-flex items-center gap-1.5">
                           Read article <ArrowRight className="h-4 w-4" />
                         </span>
@@ -132,7 +194,7 @@ export default function BlogListPage() {
 
             {/* Grid Section for Remaining Posts */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {blogs.slice(1).map(blog => (
+              {(searchQuery || selectedTag ? filteredBlogs : filteredBlogs.slice(1)).map(blog => (
                 <Link key={blog.id} href={`/blog/${blog.slug}`} className="h-full">
                   <Card className="bg-[#161b22] border-[#30363d] hover:border-[#484f58] transition-all duration-300 group cursor-pointer h-full flex flex-col overflow-hidden hover:-translate-y-1 hover:shadow-xl">
                     {/* Blog Image */}
@@ -161,6 +223,10 @@ export default function BlogListPage() {
                         <span className="flex items-center gap-1 text-[10px] text-[#7d8590] bg-[#21262d] px-2 py-0.5 rounded-full border border-[#30363d]">
                           <Clock className="h-2.5 w-2.5" />
                           {estimateReadTime(blog.content)} min
+                        </span>
+                        <span className="flex items-center gap-1 text-[10px] text-[#7d8590] bg-[#21262d] px-2 py-0.5 rounded-full border border-[#30363d]">
+                          <Heart className="h-2.5 w-2.5" />
+                          {blog.likes || 0}
                         </span>
                       </div>
                       <h2 className="text-xl font-bold text-white group-hover:text-[#58a6ff] transition-colors mb-3 leading-snug line-clamp-2">
