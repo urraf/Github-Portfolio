@@ -17,7 +17,6 @@ export default function BlogListPage() {
   const [blogs, setBlogs] = useState<Blog[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
-  const [selectedTag, setSelectedTag] = useState<string | null>(null)
 
   useEffect(() => {
     fetch("/api/admin/blogs?public=true")
@@ -28,15 +27,10 @@ export default function BlogListPage() {
 
   const estimateReadTime = (content: string) => Math.max(1, Math.ceil(content.split(/\s+/).length / 200))
 
-  // Extract all unique tags
-  const allTags = Array.from(new Set(blogs.flatMap(blog => blog.tags))).sort()
-
   // Filter blogs
   const filteredBlogs = blogs.filter(blog => {
-    const matchesSearch = blog.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          blog.excerpt?.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesTag = selectedTag ? blog.tags.includes(selectedTag) : true
-    return matchesSearch && matchesTag
+    return blog.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+           blog.excerpt?.toLowerCase().includes(searchQuery.toLowerCase())
   })
 
   return (
@@ -86,34 +80,6 @@ export default function BlogListPage() {
                 className="w-full bg-[#161b22]/80 border border-[#30363d] rounded-full py-4 pl-12 pr-6 text-white placeholder:text-[#7d8590] focus:outline-none focus:border-[#58a6ff] focus:ring-1 focus:ring-[#58a6ff] transition-all"
               />
             </div>
-            
-            {allTags.length > 0 && (
-              <div className="flex flex-wrap items-center justify-center gap-2">
-                <button
-                  onClick={() => setSelectedTag(null)}
-                  className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors border ${
-                    selectedTag === null 
-                      ? 'bg-[#58a6ff]/10 text-[#58a6ff] border-[#58a6ff]/30' 
-                      : 'bg-[#161b22] text-[#7d8590] border-[#30363d] hover:border-[#484f58] hover:text-[#c9d1d9]'
-                  }`}
-                >
-                  All
-                </button>
-                {allTags.map(tag => (
-                  <button
-                    key={tag}
-                    onClick={() => setSelectedTag(tag)}
-                    className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors border ${
-                      selectedTag === tag 
-                        ? 'bg-[#58a6ff]/10 text-[#58a6ff] border-[#58a6ff]/30' 
-                        : 'bg-[#161b22] text-[#7d8590] border-[#30363d] hover:border-[#484f58] hover:text-[#c9d1d9]'
-                    }`}
-                  >
-                    {tag}
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
         </div>
 
@@ -133,8 +99,8 @@ export default function BlogListPage() {
           <div className="space-y-12">
             {/* Magazine Layout */}
             
-            {/* Top Featured Post - Full Width (Only show if no search/filter active) */}
-            {filteredBlogs.length > 0 && !searchQuery && !selectedTag && (
+            {/* Top Featured Post - Full Width (Only show if no search active) */}
+            {filteredBlogs.length > 0 && !searchQuery && (
               <Link href={`/blog/${filteredBlogs[0].slug}`}>
                 <Card className="bg-[#161b22] border-[#30363d] hover:border-[#58a6ff]/50 transition-all duration-500 group cursor-pointer overflow-hidden shadow-2xl hover:shadow-[#58a6ff]/10">
                   <div className="flex flex-col md:flex-row">
@@ -194,7 +160,7 @@ export default function BlogListPage() {
 
             {/* Grid Section for Remaining Posts */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {(searchQuery || selectedTag ? filteredBlogs : filteredBlogs.slice(1)).map(blog => (
+              {(searchQuery ? filteredBlogs : filteredBlogs.slice(1)).map(blog => (
                 <Link key={blog.id} href={`/blog/${blog.slug}`} className="h-full">
                   <Card className="bg-[#161b22] border-[#30363d] hover:border-[#484f58] transition-all duration-300 group cursor-pointer h-full flex flex-col overflow-hidden hover:-translate-y-1 hover:shadow-xl">
                     {/* Blog Image */}
