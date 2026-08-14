@@ -18,6 +18,7 @@ import {
   BookOpen,
   Settings,
   FileCode,
+  HandCoins,
 } from "lucide-react"
 import { useState } from "react"
 
@@ -30,8 +31,9 @@ const navItems = [
   { href: "/admin/dashboard/achievements", label: "Achievements", icon: Trophy },
   { href: "/admin/dashboard/education", label: "Education", icon: GraduationCap },
   { href: "/admin/dashboard/blog", label: "Blog", icon: BookOpen },
+  { href: "/admin/dashboard/client-work", label: "Client Work", icon: HandCoins },
   { href: "/admin/dashboard/html-projects", label: "HTML Projects", icon: FileCode },
-  { href: "/admin/dashboard/resume", label: "Resume", icon: Upload },
+  { href: "/admin/dashboard/resume", label: "Resumes", icon: Upload },
   { href: "/admin/dashboard/settings", label: "Settings", icon: Settings },
 ]
 

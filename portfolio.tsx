@@ -4,9 +4,9 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { ExternalLink, Github, Linkedin, Mail, Phone, Star, Trophy, MapPin, Building, GitFork, BookOpen, Code, Zap, Menu, X, Download } from 'lucide-react'
+import { ExternalLink, Github, Linkedin, Mail, Phone, Star, Trophy, MapPin, Building, GitFork, BookOpen, Code, Zap, Menu, X, Download, ChevronDown } from 'lucide-react'
 import Link from "next/link"
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import Chatbot from "@/components/chatbot"
 import AnimatedBackground from "@/components/animated-background"
 
@@ -17,10 +17,32 @@ interface PortfolioProps {
 
 export default function Component({ data }: PortfolioProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [resumes, setResumes] = useState<{_id: string; label: string; url: string}[]>([])
+  const [resumeDropdownOpen, setResumeDropdownOpen] = useState(false)
+  const resumeDropdownRef = useRef<HTMLDivElement>(null)
 
-  // Function to handle resume download
-  const handleDownloadResume = () => {
-    window.location.href = "/api/download/resume";
+  // Fetch resumes from API
+  useEffect(() => {
+    fetch('/api/resumes').then(r => r.json()).then(data => {
+      if (Array.isArray(data)) setResumes(data)
+    }).catch(() => {})
+  }, [])
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (resumeDropdownRef.current && !resumeDropdownRef.current.contains(e.target as Node)) {
+        setResumeDropdownOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
+  // Function to view resume in new tab
+  const handleViewResume = (url: string) => {
+    window.open(url, '_blank')
+    setResumeDropdownOpen(false)
   }
 
   const languageColors: Record<string, string> = {
@@ -46,7 +68,7 @@ export default function Component({ data }: PortfolioProps) {
   // Use data from props (JSON file) or fallback defaults
   const profile = data?.profile || { name: "Farhan", username: "urraf", tagline: "🚀 Software Engineer", bio: "", detailedBio: "", detailedBioSub: "", institution: "NSUT", location: "New Delhi, India", email: "farhan.techcareer@gmail.com", phone: "8XXXXXXXX", avatarFallback: "F" }
   const socialLinks = data?.socialLinks || { github: "https://github.com/urraf", linkedin: "https://www.linkedin.com/in/nahrafxd", twitter: "https://www.x.com/urrafx", linkedinDisplay: "linkedin.com/in/nahrafxd", leetcode: "https://www.leetcode.com/u/urraf" }
-  const stats = data?.stats || [{ value: "25+", label: "Github Repos", color: "text-white" }, { value: "1.8k", label: "LeetCode Rating", color: "text-[#ffa116]" }, { value: "1000+", label: "Codeforces", color: "text-[#1f8acb]" }, { value: "700+", label: "Problems Solved", color: "text-[#2ea043]" }]
+  const stats = data?.liveStats || data?.stats || [{ value: "25+", label: "Github Repos", color: "text-white" }, { value: "1.8k", label: "LeetCode Rating", color: "text-[#ffa116]" }, { value: "1000+", label: "Codeforces", color: "text-[#1f8acb]" }, { value: "700+", label: "Problems Solved", color: "text-[#2ea043]" }]
   const projects: any[] = data?.projects || []
   const experiences: any[] = data?.experiences || []
   const skills: Record<string, string[]> = data?.skills || {}
@@ -99,17 +121,51 @@ export default function Component({ data }: PortfolioProps) {
                 <Link href="/project-overview" className="text-[#7d8590] hover:text-white transition-colors whitespace-nowrap">
                   Project Overview
                 </Link>
+                <Link href="/client-work" className="text-[#7d8590] hover:text-white transition-colors whitespace-nowrap">
+                  Client Work
+                </Link>
               </nav>
             </div>
             <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
-              <Button
-                size="sm"
-                onClick={handleDownloadResume}
-                className="bg-[#238636] hover:bg-[#2ea043] text-white border-0 hidden sm:flex text-xs px-2 sm:px-3 py-1 sm:py-1.5 h-7 sm:h-8"
-              >
-                <Download className="h-3 w-3 mr-1" />
-                <span className="hidden sm:inline">Resume</span>
-              </Button>
+              {/* Smart Resume Button - Desktop Header */}
+              <div className="relative hidden sm:block" ref={resumeDropdownRef}>
+                {resumes.length <= 1 ? (
+                  <Button
+                    size="sm"
+                    onClick={() => resumes[0] && handleViewResume(resumes[0].url)}
+                    className="bg-[#238636] hover:bg-[#2ea043] text-white border-0 text-xs px-2 sm:px-3 py-1 sm:py-1.5 h-7 sm:h-8"
+                  >
+                    <Download className="h-3 w-3 mr-1" />
+                    <span className="hidden sm:inline">Resume</span>
+                  </Button>
+                ) : (
+                  <>
+                    <Button
+                      size="sm"
+                      onClick={() => setResumeDropdownOpen(!resumeDropdownOpen)}
+                      className="bg-[#238636] hover:bg-[#2ea043] text-white border-0 text-xs px-2 sm:px-3 py-1 sm:py-1.5 h-7 sm:h-8"
+                    >
+                      <Download className="h-3 w-3 mr-1" />
+                      <span className="hidden sm:inline">Resume</span>
+                      <ChevronDown className={`h-3 w-3 ml-1 transition-transform ${resumeDropdownOpen ? 'rotate-180' : ''}`} />
+                    </Button>
+                    {resumeDropdownOpen && (
+                      <div className="absolute right-0 mt-1 w-48 bg-[#161b22] border border-[#30363d] rounded-lg shadow-xl z-50 py-1 overflow-hidden">
+                        {resumes.map(r => (
+                          <button
+                            key={r._id}
+                            onClick={() => handleViewResume(r.url)}
+                            className="w-full text-left px-3 py-2 text-sm text-[#e6edf3] hover:bg-[#21262d] transition-colors flex items-center gap-2"
+                          >
+                            <Download className="h-3 w-3 text-[#7d8590]" />
+                            {r.label}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
               <Button
                 size="sm"
                 variant="ghost"
@@ -131,6 +187,9 @@ export default function Component({ data }: PortfolioProps) {
                 <Link href="/project-overview" className="text-[#e6edf3] hover:text-white transition-colors py-1 w-full">
                   Project Overview
                 </Link>
+                <Link href="/client-work" className="text-[#7d8590] hover:text-white transition-colors py-1 w-full">
+                  Client Work
+                </Link>
                 <Link href={socialLinks.github}
                   target="_blank" rel="noopener noreferrer"
                   className="text-[#7d8590] hover:text-white transition-colors py-1 w-full">
@@ -147,14 +206,31 @@ export default function Component({ data }: PortfolioProps) {
                   className="text-[#7d8590] hover:text-white transition-colors py-1 w-full">
                   Twitter
                 </Link>
-                <Button
-                  size="sm"
-                  onClick={handleDownloadResume}
-                  className="bg-[#238636] hover:bg-[#2ea043] text-white border-0 text-xs px-3 py-1.5 w-fit mt-1"
-                >
-                  <Download className="h-3 w-3 mr-1" />
-                  Download Resume
-                </Button>
+                {/* Mobile Resume Buttons */}
+                {resumes.length <= 1 ? (
+                  <Button
+                    size="sm"
+                    onClick={() => resumes[0] && handleViewResume(resumes[0].url)}
+                    className="bg-[#238636] hover:bg-[#2ea043] text-white border-0 text-xs px-3 py-1.5 w-fit mt-1"
+                  >
+                    <Download className="h-3 w-3 mr-1" />
+                    View Resume
+                  </Button>
+                ) : (
+                  <div className="flex flex-col gap-1 mt-1">
+                    {resumes.map(r => (
+                      <Button
+                        key={r._id}
+                        size="sm"
+                        onClick={() => handleViewResume(r.url)}
+                        className="bg-[#238636] hover:bg-[#2ea043] text-white border-0 text-xs px-3 py-1.5 w-fit"
+                      >
+                        <Download className="h-3 w-3 mr-1" />
+                        {r.label}
+                      </Button>
+                    ))}
+                  </div>
+                )}
               </nav>
             </div>
           )}
@@ -176,13 +252,29 @@ export default function Component({ data }: PortfolioProps) {
                 {profile.tagline}
                 <p className="text-[#8b949e] mt-2 font-medium">{profile.bio}</p>
               </div>
-              <Button
-                onClick={handleDownloadResume}
-                className="bg-gradient-to-r from-[#238636] to-[#2ea043] hover:from-[#2ea043] hover:to-[#3fb950] text-white border-0 text-base sm:text-lg px-6 py-6 sm:py-7 w-full shadow-lg shadow-[#238636]/20 transition-all font-semibold rounded-xl"
-              >
-                <Download className="h-5 w-5 sm:h-6 sm:w-6 mr-2" />
-                Download Resume
-              </Button>
+              {/* Mobile Resume Smart Button */}
+              {resumes.length <= 1 ? (
+                <Button
+                  onClick={() => resumes[0] && handleViewResume(resumes[0].url)}
+                  className="bg-gradient-to-r from-[#238636] to-[#2ea043] hover:from-[#2ea043] hover:to-[#3fb950] text-white border-0 text-base sm:text-lg px-6 py-6 sm:py-7 w-full shadow-lg shadow-[#238636]/20 transition-all font-semibold rounded-xl"
+                >
+                  <Download className="h-5 w-5 sm:h-6 sm:w-6 mr-2" />
+                  View Resume
+                </Button>
+              ) : (
+                <div className="space-y-2 w-full">
+                  {resumes.map(r => (
+                    <Button
+                      key={r._id}
+                      onClick={() => handleViewResume(r.url)}
+                      className="bg-gradient-to-r from-[#238636] to-[#2ea043] hover:from-[#2ea043] hover:to-[#3fb950] text-white border-0 text-sm sm:text-base px-6 py-4 sm:py-5 w-full shadow-lg shadow-[#238636]/20 transition-all font-semibold rounded-xl"
+                    >
+                      <Download className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                      {r.label}
+                    </Button>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -206,13 +298,29 @@ export default function Component({ data }: PortfolioProps) {
                   </p>
                 </div>
 
-                <Button
-                  onClick={handleDownloadResume}
-                  className="w-full bg-[#238636] hover:bg-[#2ea043] text-white border-0 mb-4"
-                >
-                  <Download className="h-4 w-4 mr-2" />
-                  Download Resume
-                </Button>
+                {/* Desktop Sidebar Resume Smart Button */}
+                {resumes.length <= 1 ? (
+                  <Button
+                    onClick={() => resumes[0] && handleViewResume(resumes[0].url)}
+                    className="w-full bg-[#238636] hover:bg-[#2ea043] text-white border-0 mb-4"
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    View Resume
+                  </Button>
+                ) : (
+                  <div className="space-y-2 mb-4">
+                    {resumes.map(r => (
+                      <Button
+                        key={r._id}
+                        onClick={() => handleViewResume(r.url)}
+                        className="w-full bg-[#238636] hover:bg-[#2ea043] text-white border-0 text-sm"
+                      >
+                        <Download className="h-4 w-4 mr-2" />
+                        {r.label}
+                      </Button>
+                    ))}
+                  </div>
+                )}
 
                 <div className="space-y-3 text-sm">
                   <div className="flex items-center gap-2 text-[#7d8590] justify-center xl:justify-start">

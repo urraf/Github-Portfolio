@@ -33,6 +33,25 @@ export default async function Page() {
       console.error('Failed to read portfolio data:', e)
     }
   }
+  // Fetch live stats and merge into portfolio data
+  if (portfolioData && process.env.MONGODB_URI) {
+    try {
+      const { getDb } = await import("@/lib/mongodb")
+      const db = await getDb()
+      const cached = await db.collection('liveStats').findOne({ _id: 'current' as unknown as import('mongodb').ObjectId })
+      if (cached) {
+        const cacheAge = Date.now() - new Date(cached.fetchedAt).getTime()
+        if (cacheAge < 60 * 60 * 1000) {
+          portfolioData.liveStats = cached.stats
+          if (cached.codingStats && cached.codingStats.length > 0) {
+            portfolioData.codingStats = cached.codingStats
+          }
+        }
+      }
+    } catch (e) {
+      console.error('Failed to read live stats:', e)
+    }
+  }
 
   return <PortfolioClient data={portfolioData} />
 }
