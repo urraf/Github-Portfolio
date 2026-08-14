@@ -142,12 +142,12 @@ export async function GET(request: Request) {
     ]);
 
     // Fetch manual overrides from Admin Panel
-    let totalProblems = (leetcode?.totalSolved || 0) + (codeforces?.solvedCount || 0);
+    let totalProblems: string | number = (leetcode?.totalSolved || 0) + (codeforces?.solvedCount || 0);
     if (portfolioData?.totalProblemsSolved !== undefined && portfolioData.totalProblemsSolved !== null) {
-      totalProblems = Number(portfolioData.totalProblemsSolved);
+      totalProblems = portfolioData.totalProblemsSolved;
     }
 
-    const githubVal = portfolioData?.manualGithubRepos ? `${portfolioData.manualGithubRepos}+` : (github ? `${github.publicRepos}+` : '25+');
+    const githubVal = portfolioData?.manualGithubRepos ? `${portfolioData.manualGithubRepos}` : (github ? `${github.publicRepos}+` : '25+');
     const leetcodeVal = portfolioData?.manualLeetcodeRating ? `${portfolioData.manualLeetcodeRating}` : (leetcode ? `${leetcode.rating}` : '1800+');
     const codeforcesVal = portfolioData?.manualCodeforcesRating ? `${portfolioData.manualCodeforcesRating}` : (codeforces ? `${codeforces.rating}` : '1000+');
 
@@ -168,7 +168,7 @@ export async function GET(request: Request) {
         color: 'text-[#1f8acb]',
       },
       {
-        value: totalProblems ? `${totalProblems}+` : '700+',
+        value: typeof totalProblems === 'number' ? `${totalProblems}+` : String(totalProblems),
         label: 'Total Problems Solved',
         color: 'text-[#2ea043]',
       },

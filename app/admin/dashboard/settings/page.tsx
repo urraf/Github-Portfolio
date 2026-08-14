@@ -46,10 +46,10 @@ export default function SettingsPage() {
     
     try {
       const payload = {
-        manualGithubRepos: statsOverride.manualGithubRepos ? parseInt(statsOverride.manualGithubRepos) : null,
-        manualLeetcodeRating: statsOverride.manualLeetcodeRating ? parseInt(statsOverride.manualLeetcodeRating) : null,
-        manualCodeforcesRating: statsOverride.manualCodeforcesRating ? parseInt(statsOverride.manualCodeforcesRating) : null,
-        totalProblemsSolved: statsOverride.totalProblemsSolved ? parseInt(statsOverride.totalProblemsSolved) : null,
+        manualGithubRepos: statsOverride.manualGithubRepos ? statsOverride.manualGithubRepos : null,
+        manualLeetcodeRating: statsOverride.manualLeetcodeRating ? statsOverride.manualLeetcodeRating : null,
+        manualCodeforcesRating: statsOverride.manualCodeforcesRating ? statsOverride.manualCodeforcesRating : null,
+        totalProblemsSolved: statsOverride.totalProblemsSolved ? statsOverride.totalProblemsSolved : null,
       };
 
       const res = await fetch("/api/admin/portfolio", {
@@ -206,45 +206,41 @@ export default function SettingsPage() {
               <div className="space-y-2">
                 <label className="text-sm font-medium text-[#e6edf3]">GitHub Repos</label>
                 <Input
-                  type="number"
-                  placeholder="e.g. 35"
+                  type="text"
+                  placeholder="e.g. 35+"
                   value={statsOverride.manualGithubRepos}
                   onChange={e => setStatsOverride({...statsOverride, manualGithubRepos: e.target.value})}
                   className={ic}
-                  min="0"
                 />
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium text-[#e6edf3]">LeetCode Rating</label>
                 <Input
-                  type="number"
+                  type="text"
                   placeholder="e.g. 1800"
                   value={statsOverride.manualLeetcodeRating}
                   onChange={e => setStatsOverride({...statsOverride, manualLeetcodeRating: e.target.value})}
                   className={ic}
-                  min="0"
                 />
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium text-[#e6edf3]">Codeforces Rating</label>
                 <Input
-                  type="number"
-                  placeholder="e.g. 1500"
+                  type="text"
+                  placeholder="e.g. 1500+"
                   value={statsOverride.manualCodeforcesRating}
                   onChange={e => setStatsOverride({...statsOverride, manualCodeforcesRating: e.target.value})}
                   className={ic}
-                  min="0"
                 />
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium text-[#e6edf3]">Total Problems Solved</label>
                 <Input
-                  type="number"
-                  placeholder="e.g. 800"
+                  type="text"
+                  placeholder="e.g. 800+"
                   value={statsOverride.totalProblemsSolved}
                   onChange={e => setStatsOverride({...statsOverride, totalProblemsSolved: e.target.value})}
                   className={ic}
-                  min="0"
                 />
               </div>
             </div>
