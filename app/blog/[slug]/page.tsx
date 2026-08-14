@@ -7,10 +7,11 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { ArrowLeft, Calendar, Clock, BookOpen } from "lucide-react"
 import AnimatedBackground from "@/components/animated-background"
 import MarkdownRenderer from "@/components/markdown-renderer"
+import BlogComments from "@/components/blog-comments"
 
 interface Blog {
   id: string; title: string; slug: string; content: string; excerpt: string
-  tags: string[]; publishedAt: string; published: boolean
+  tags: string[]; publishedAt: string; published: boolean; imageUrl?: string
 }
 
 export default function BlogPostPage() {
@@ -108,13 +109,31 @@ export default function BlogPostPage() {
             </div>
           </header>
 
-          {/* Divider */}
-          <div className="w-16 h-0.5 bg-gradient-to-r from-[#58a6ff] to-[#3fb950] mx-auto mb-10 rounded-full" />
+          {/* Hero Image */}
+          {blog.imageUrl && (
+            <div className="w-full h-64 sm:h-80 md:h-96 relative overflow-hidden rounded-2xl mb-12 shadow-2xl border border-[#30363d]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img 
+                src={blog.imageUrl} 
+                alt={blog.title}
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0d1117]/80 to-transparent pointer-events-none" />
+            </div>
+          )}
+
+          {/* Divider if no image */}
+          {!blog.imageUrl && (
+            <div className="w-16 h-0.5 bg-gradient-to-r from-[#58a6ff] to-[#3fb950] mx-auto mb-10 rounded-full" />
+          )}
 
           {/* Article Body */}
-          <div className="bg-[#161b22]/80 border border-[#30363d] rounded-2xl p-6 sm:p-10 lg:p-12 shadow-xl backdrop-blur-sm">
+          <div className="bg-[#161b22]/80 border border-[#30363d] rounded-2xl p-6 sm:p-10 lg:p-12 shadow-xl backdrop-blur-sm prose prose-invert max-w-none prose-pre:bg-[#0d1117] prose-pre:border prose-pre:border-[#30363d] prose-a:text-[#58a6ff] hover:prose-a:text-[#79c0ff] prose-img:rounded-xl">
             <MarkdownRenderer content={blog.content} />
           </div>
+
+          {/* Comments Section */}
+          <BlogComments blogId={blog.id} />
         </article>
 
         {/* Bottom Navigation */}
