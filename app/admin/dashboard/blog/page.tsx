@@ -5,12 +5,13 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Plus, Trash2, BookOpen, Eye, EyeOff, Edit3, X, Save, CheckCircle, ImagePlus, Bold, Italic, Heading1, Heading2, Heading3, List, ListOrdered, Link2, Code, Quote, Minus } from "lucide-react"
+import { Plus, Trash2, BookOpen, Eye, EyeOff, Edit3, X, Save, CheckCircle, ImagePlus, Bold, Italic, Heading1, Heading2, Heading3, List, ListOrdered, Link2, Code, Quote, Minus, Image, Upload, ExternalLink } from "lucide-react"
 import MarkdownRenderer from "@/components/markdown-renderer"
 
 interface Blog {
   id: string; title: string; slug: string; content: string; excerpt: string
   tags: string[]; publishedAt: string; updatedAt: string; published: boolean
+  imageUrl?: string; likes?: number
 }
 
 export default function BlogManagerPage() {
@@ -21,8 +22,11 @@ export default function BlogManagerPage() {
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [uploading, setUploading] = useState(false)
+  const [coverUploading, setCoverUploading] = useState(false)
+  const [coverMode, setCoverMode] = useState<"url" | "upload">("url")
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const imageRef = useRef<HTMLInputElement>(null)
+  const coverImageRef = useRef<HTMLInputElement>(null)
 
   const loadBlogs = () => { fetch("/api/admin/blogs").then(r => r.json()).then(setBlogs) }
   useEffect(loadBlogs, [])
@@ -36,7 +40,6 @@ export default function BlogManagerPage() {
 
   const saveBlog = async () => {
     if (!editing) return; setSaving(true)
-    // Auto-generate slug from title if slug is empty or was auto-generated
     const blogToSave = { ...editing }
     if (!blogToSave.slug || blogToSave.slug === 'untitled-post') {
       blogToSave.slug = generateSlug(blogToSave.title)
@@ -99,6 +102,19 @@ export default function BlogManagerPage() {
     setUploading(false)
   }
 
+  const handleCoverImageUpload = async (file: File) => {
+    setCoverUploading(true)
+    const formData = new FormData(); formData.append("image", file)
+    try {
+      const res = await fetch("/api/admin/upload", { method: "POST", body: formData })
+      const data = await res.json()
+      if (res.ok && data.url && editing) {
+        setEditing({ ...editing, imageUrl: data.url })
+      }
+    } catch (e) { console.error(e) }
+    setCoverUploading(false)
+  }
+
   const toolbarButtons = [
     { icon: Bold, action: () => insertMarkdown("**", "**", "bold text"), title: "Bold" },
     { icon: Italic, action: () => insertMarkdown("*", "*", "italic text"), title: "Italic" },
@@ -138,6 +154,12 @@ export default function BlogManagerPage() {
             {preview ? (
               <Card className="bg-[#161b22] border-[#30363d]">
                 <CardContent className="p-8">
+                  {editing.imageUrl && (
+                    <div className="w-full h-64 rounded-lg overflow-hidden mb-6 border border-[#30363d]">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={editing.imageUrl} alt={editing.title} className="w-full h-full object-cover" />
+                    </div>
+                  )}
                   <h1 className="text-3xl font-bold text-white mb-6">{editing.title}</h1>
                   <MarkdownRenderer 
                     content={editing.content} 
@@ -176,6 +198,7 @@ export default function BlogManagerPage() {
             )}
           </div>
           <div className="space-y-4">
+            {/* Post Settings */}
             <Card className="bg-[#161b22] border-[#30363d]">
               <CardHeader><CardTitle className="text-white text-sm">Post Settings</CardTitle></CardHeader>
               <CardContent className="space-y-4 pt-0">
@@ -204,6 +227,94 @@ export default function BlogManagerPage() {
                     <span className={`block w-4 h-4 rounded-full bg-white absolute top-1 transition-transform ${editing.published ? "translate-x-6" : "translate-x-1"}`} />
                   </button>
                 </div>
+              </CardContent>
+            </Card>
+
+            {/* Cover Image */}
+            <Card className="bg-[#161b22] border-[#30363d]">
+              <CardHeader>
+                <CardTitle className="text-white text-sm flex items-center gap-2">
+                  <Image className="h-4 w-4 text-[#58a6ff]" />
+                  Cover Image
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3 pt-0">
+                {/* Cover Image Preview */}
+                {editing.imageUrl ? (
+                  <div className="relative group">
+                    <div className="w-full h-40 rounded-lg overflow-hidden border border-[#30363d]">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img 
+                        src={editing.imageUrl} 
+                        alt="Cover" 
+                        className="w-full h-full object-cover"
+                        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+                      />
+                    </div>
+                    <button 
+                      onClick={() => setEditing({ ...editing, imageUrl: "" })} 
+                      className="absolute top-2 right-2 bg-[#f85149] hover:bg-[#da3633] text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                      title="Remove cover image"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="w-full h-32 rounded-lg border-2 border-dashed border-[#30363d] flex flex-col items-center justify-center gap-2 text-[#484f58]">
+                    <Image className="h-8 w-8" />
+                    <span className="text-xs">No cover image</span>
+                  </div>
+                )}
+
+                {/* Toggle between URL and Upload */}
+                <div className="flex rounded-lg overflow-hidden border border-[#30363d]">
+                  <button 
+                    onClick={() => setCoverMode("url")} 
+                    className={`flex-1 text-xs py-2 px-3 flex items-center justify-center gap-1.5 transition-colors ${coverMode === "url" ? "bg-[#21262d] text-white" : "bg-[#0d1117] text-[#7d8590] hover:text-white"}`}
+                  >
+                    <ExternalLink className="h-3 w-3" />
+                    URL
+                  </button>
+                  <button 
+                    onClick={() => setCoverMode("upload")} 
+                    className={`flex-1 text-xs py-2 px-3 flex items-center justify-center gap-1.5 transition-colors ${coverMode === "upload" ? "bg-[#21262d] text-white" : "bg-[#0d1117] text-[#7d8590] hover:text-white"}`}
+                  >
+                    <Upload className="h-3 w-3" />
+                    Upload
+                  </button>
+                </div>
+
+                {coverMode === "url" ? (
+                  <Input 
+                    value={editing.imageUrl || ""} 
+                    onChange={e => setEditing({ ...editing, imageUrl: e.target.value })} 
+                    className={`${ic} text-xs`} 
+                    placeholder="https://images.unsplash.com/..."
+                  />
+                ) : (
+                  <div>
+                    <Button 
+                      onClick={() => coverImageRef.current?.click()} 
+                      disabled={coverUploading}
+                      variant="outline" 
+                      className="w-full border-[#30363d] text-[#e6edf3] bg-[#0d1117] hover:bg-[#21262d] text-xs"
+                    >
+                      {coverUploading ? (
+                        <><div className="h-3 w-3 border-2 border-[#58a6ff]/30 border-t-[#58a6ff] rounded-full animate-spin mr-2" />Uploading...</>
+                      ) : (
+                        <><Upload className="h-3 w-3 mr-2" />Choose Image</>
+                      )}
+                    </Button>
+                    <input 
+                      ref={coverImageRef} 
+                      type="file" 
+                      accept="image/*" 
+                      className="hidden" 
+                      onChange={e => { const f = e.target.files?.[0]; if (f) handleCoverImageUpload(f) }} 
+                    />
+                  </div>
+                )}
+                <p className="text-[10px] text-[#484f58]">This image is shown as the blog card thumbnail and the hero image on the blog post page.</p>
               </CardContent>
             </Card>
 
@@ -249,7 +360,20 @@ export default function BlogManagerPage() {
           {blogs.map(blog => (
             <Card key={blog.id} className="bg-[#161b22] border-[#30363d] hover:border-[#484f58] transition-colors">
               <CardContent className="p-5">
-                <div className="flex items-start justify-between gap-4">
+                <div className="flex items-start gap-4">
+                  {/* Thumbnail */}
+                  <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 border border-[#30363d] bg-[#0d1117]">
+                    {blog.imageUrl ? (
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img src={blog.imageUrl} alt={blog.title} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-[#30363d]">
+                        <BookOpen className="h-6 w-6" />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Content */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
                       <h3 className="text-white font-semibold truncate">{blog.title}</h3>
@@ -264,6 +388,8 @@ export default function BlogManagerPage() {
                       {blog.tags.length > 0 && <div className="flex gap-1">{blog.tags.slice(0, 3).map((t, i) => (<Badge key={i} className="bg-[#21262d] text-[#58a6ff] border-[#30363d] text-[10px] py-0">{t}</Badge>))}</div>}
                     </div>
                   </div>
+
+                  {/* Actions */}
                   <div className="flex items-center gap-1 flex-shrink-0">
                     <Button size="sm" variant="ghost" className="text-[#7d8590] hover:text-white hover:bg-[#21262d] h-8 w-8 p-0" onClick={() => togglePublish(blog)} title={blog.published ? "Unpublish" : "Publish"}>{blog.published ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</Button>
                     <Button size="sm" variant="ghost" className="text-[#7d8590] hover:text-white hover:bg-[#21262d] h-8 w-8 p-0" onClick={() => { setEditing(blog); setPreview(false) }} title="Edit"><Edit3 className="h-4 w-4" /></Button>

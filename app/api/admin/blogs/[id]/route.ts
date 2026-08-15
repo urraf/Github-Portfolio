@@ -42,12 +42,14 @@ export async function PUT(
       excerpt: blogData.excerpt ?? existing.excerpt,
       tags: blogData.tags ?? existing.tags,
       published: blogData.published ?? existing.published,
+      imageUrl: blogData.imageUrl ?? existing.imageUrl ?? '',
+      likes: blogData.likes ?? existing.likes ?? 0,
       updatedAt: new Date().toISOString(),
     };
 
     await db.collection('blogs').updateOne(filter, { $set: updateData });
 
-    const updated = { id, ...updateData, publishedAt: existing.publishedAt };
+    const updated = { id, ...updateData, publishedAt: existing.publishedAt, imageUrl: updateData.imageUrl, likes: updateData.likes };
     return NextResponse.json(updated);
   } catch (error) {
     console.error('Error updating blog:', error);
