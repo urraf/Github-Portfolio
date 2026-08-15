@@ -24,18 +24,55 @@ export default function BlogManagerPage() {
   const [uploading, setUploading] = useState(false)
   const [coverUploading, setCoverUploading] = useState(false)
   const [coverMode, setCoverMode] = useState<"url" | "upload">("url")
+  const [loading, setLoading] = useState(true)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const imageRef = useRef<HTMLInputElement>(null)
   const coverImageRef = useRef<HTMLInputElement>(null)
 
-  const loadBlogs = () => { fetch("/api/admin/blogs").then(r => r.json()).then(setBlogs) }
-  useEffect(loadBlogs, [])
+  const loadBlogs = () => { 
+    setLoading(true)
+    fetch("/api/admin/blogs")
+      .then(r => r.json())
+      .then(b => { setBlogs(b); setLoading(false) })
+      .catch(() => setLoading(false))
+  }
+  
+  useEffect(() => {
+    loadBlogs()
+    const handlePopState = () => {
+      if (window.location.hash !== '#edit') {
+        setEditing(null)
+        setPreview(false)
+      }
+    }
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [])
+
+  const openEditor = (blog: Blog) => {
+    setEditing(blog)
+    setPreview(false)
+    window.history.pushState(null, '', window.location.pathname + '#edit')
+  }
+
+  const closeEditor = () => {
+    if (window.location.hash === '#edit') {
+      window.history.back()
+    } else {
+      setEditing(null)
+      setPreview(false)
+    }
+  }
 
   const generateSlug = (title: string) => title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
 
   const createBlog = async () => {
     const res = await fetch("/api/admin/blogs", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title: "Untitled Post", content: "Start writing your blog post here...", excerpt: "", tags: [], published: false }) })
-    if (res.ok) { const blog = await res.json(); setEditing(blog); setPreview(false); loadBlogs() }
+    if (res.ok) { 
+      const blog = await res.json()
+      openEditor(blog)
+      loadBlogs() 
+    }
   }
 
   const saveBlog = async () => {
@@ -136,7 +173,7 @@ export default function BlogManagerPage() {
       <div className="space-y-4">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div className="flex items-center gap-3">
-            <Button onClick={() => { setEditing(null); setPreview(false) }} variant="ghost" className="text-[#7d8590] hover:text-white hover:bg-[#21262d]"><X className="h-4 w-4 mr-1" />Back</Button>
+            <Button type="button" onClick={closeEditor} variant="ghost" className="text-[#7d8590] hover:text-white hover:bg-[#21262d]"><X className="h-4 w-4 mr-1" />Back</Button>
             <h1 className="text-xl font-bold text-white">Edit Blog Post</h1>
           </div>
           <div className="flex gap-2">
@@ -346,7 +383,11 @@ export default function BlogManagerPage() {
         <Button onClick={createBlog} className="bg-[#1f6feb] hover:bg-[#388bfd] text-white border-0"><Plus className="h-4 w-4 mr-2" />New Post</Button>
       </div>
 
-      {blogs.length === 0 ? (
+      {loading ? (
+        <div className="flex items-center justify-center py-20">
+          <div className="h-8 w-8 border-4 border-[#58a6ff]/30 border-t-[#58a6ff] rounded-full animate-spin" />
+        </div>
+      ) : blogs.length === 0 ? (
         <Card className="bg-[#161b22] border-[#30363d]">
           <CardContent className="p-12 text-center">
             <BookOpen className="h-12 w-12 text-[#30363d] mx-auto mb-4" />
@@ -392,7 +433,7 @@ export default function BlogManagerPage() {
                   {/* Actions */}
                   <div className="flex items-center gap-1 flex-shrink-0">
                     <Button size="sm" variant="ghost" className="text-[#7d8590] hover:text-white hover:bg-[#21262d] h-8 w-8 p-0" onClick={() => togglePublish(blog)} title={blog.published ? "Unpublish" : "Publish"}>{blog.published ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</Button>
-                    <Button size="sm" variant="ghost" className="text-[#7d8590] hover:text-white hover:bg-[#21262d] h-8 w-8 p-0" onClick={() => { setEditing(blog); setPreview(false) }} title="Edit"><Edit3 className="h-4 w-4" /></Button>
+                    <Button size="sm" variant="ghost" className="text-[#7d8590] hover:text-white hover:bg-[#21262d] h-8 w-8 p-0" onClick={() => openEditor(blog)} title="Edit"><Edit3 className="h-4 w-4" /></Button>
                     <Button size="sm" variant="ghost" className="text-[#f85149] hover:bg-[#f85149]/10 h-8 w-8 p-0" onClick={() => deleteBlog(blog.id)} title="Delete"><Trash2 className="h-4 w-4" /></Button>
                   </div>
                 </div>
