@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import { cache } from 'react'
 import Link from "next/link"
 import { notFound } from 'next/navigation'
 import { Badge } from "@/components/ui/badge"
@@ -26,25 +27,38 @@ interface Blog {
 }
 
 // Helper to fetch data
-async function getBlogData(slug: string) {
+const getBlogData = cache(async (slug: string) => {
   const db = await getDb()
-  const blogs = await db.collection('blogs').find({ public: { $ne: false }, published: true }).toArray() as any[]
+  const rawBlog = await db.collection('blogs').findOne({ slug, published: true })
   
-  const mappedBlogs = blogs.map(b => ({
-    ...b,
+  if (!rawBlog) return null
+
+  const blog: Blog = {
+    ...rawBlog as any,
+    id: rawBlog._id.toString(),
+    _id: undefined
+  }
+
+  // Get 4 random recommendations (lightweight, exclude content)
+  const rawRecommendations = await db.collection('blogs')
+    .find(
+      { slug: { $ne: slug }, published: true },
+      { projection: { content: 0 } }
+    )
+    .sort({ publishedAt: -1 })
+    .limit(8)
+    .toArray()
+
+  // Shuffle and take 4
+  const shuffled = rawRecommendations.sort(() => 0.5 - Math.random())
+  const recommendedBlogs: Blog[] = shuffled.slice(0, 4).map(b => ({
+    ...b as any,
     id: b._id.toString(),
     _id: undefined
-  })) as Blog[]
-
-  const blog = mappedBlogs.find(b => b.slug === slug)
-  if (!blog) return null
-
-  const others = mappedBlogs.filter(b => b.slug !== slug)
-  const shuffled = [...others].sort(() => 0.5 - Math.random())
-  const recommendedBlogs = shuffled.slice(0, 4)
+  }))
 
   return { blog, recommendedBlogs }
-}
+})
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const resolvedParams = await params;

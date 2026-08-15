@@ -12,7 +12,10 @@ export async function GET(request: NextRequest) {
 
     let blogs;
     if (publicOnly || !isAdmin) {
-      blogs = await db.collection('blogs').find({ published: true }).sort({ publishedAt: -1 }).toArray();
+      blogs = await db.collection('blogs').find(
+        { published: true },
+        { projection: { content: 0 } }
+      ).sort({ publishedAt: -1 }).toArray();
     } else {
       blogs = await db.collection('blogs').find({}).sort({ publishedAt: -1 }).toArray();
     }
