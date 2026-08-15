@@ -141,7 +141,7 @@ export default function BlogListPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0d1117] text-[#e6edf3] relative">
+    <div className="min-h-screen flex flex-col bg-[#0d1117] text-[#e6edf3] relative">
       <AnimatedBackground />
 
       {/* Header */}
@@ -192,7 +192,7 @@ export default function BlogListPage() {
         </div>
       </div>
 
-      <main className="mx-auto max-w-7xl px-4 py-8 sm:py-12 relative z-10">
+      <main className="flex-1 w-full mx-auto max-w-7xl px-4 py-8 sm:py-12 relative z-10">
 
         {loading ? (
           <div className="flex flex-col items-center justify-center py-32 gap-4">
