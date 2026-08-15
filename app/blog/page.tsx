@@ -1,6 +1,23 @@
+import { Metadata } from 'next'
 import { getDb } from '@/lib/mongodb'
 import AnimatedBackground from "@/components/animated-background"
 import BlogListClient from "@/components/blog-list-client"
+
+export const metadata: Metadata = {
+  title: "Blog — Tech Articles on Engineering, AI & Development",
+  description:
+    "Read Farhan's latest articles on software engineering, distributed systems, AI, full-stack development, and career growth. Deep dives into the tech that powers modern applications.",
+  keywords: ["tech blog", "software engineering", "AI", "full-stack development", "distributed systems", "backend", "tutorials"],
+  alternates: {
+    canonical: "https://www.nahraf.com/blog",
+  },
+  openGraph: {
+    title: "Farhan's Tech Blog",
+    description: "Deep dives into software engineering, AI, distributed systems, and building at scale.",
+    url: "https://www.nahraf.com/blog",
+    type: "website",
+  },
+}
 
 export const revalidate = 60
 

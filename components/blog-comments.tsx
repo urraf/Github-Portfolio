@@ -99,38 +99,38 @@ export default function BlogComments({ blogId }: { blogId: string }) {
   }
 
   return (
-    <div className="mt-16 bg-[#161b22]/50 border border-[#30363d] rounded-2xl p-6 sm:p-10 shadow-xl backdrop-blur-sm">
+    <div className="mt-16 bg-[#0c1120]/50 border border-[#1a2235] rounded-2xl p-6 sm:p-10 shadow-xl backdrop-blur-sm">
       <div className="flex items-center gap-3 mb-8">
-        <MessageSquare className="h-6 w-6 text-[#58a6ff]" />
-        <h2 className="text-2xl font-bold text-white">Discussion ({comments.length})</h2>
+        <MessageSquare className="h-6 w-6 text-[#a855f7]" />
+        <h2 className="text-2xl font-bold text-[#e2e8f0] font-mono">discussion({comments.length})</h2>
       </div>
 
       {/* Comment List */}
       <div className="space-y-6 mb-12">
         {loading ? (
           <div className="flex justify-center py-8">
-            <div className="h-6 w-6 border-2 border-[#58a6ff]/30 border-t-[#58a6ff] rounded-full animate-spin" />
+            <div className="h-6 w-6 border-2 border-[#00d4ff]/30 border-t-[#00d4ff] rounded-full animate-spin" />
           </div>
         ) : comments.length === 0 ? (
-          <div className="text-center py-8 text-[#7d8590]">
+          <div className="text-center py-8 text-[#3d4a5c]">
             No comments yet. Be the first to share your thoughts!
           </div>
         ) : (
           comments.map((comment) => (
-            <div key={comment.id} className="flex gap-4 p-4 rounded-xl hover:bg-[#21262d]/30 transition-colors border border-transparent hover:border-[#30363d]/50">
-              <Avatar className="h-10 w-10 border border-[#30363d] flex-shrink-0">
-                <AvatarFallback className="bg-[#21262d] text-[#e6edf3] font-medium">
+            <div key={comment.id} className="flex gap-4 p-4 rounded-xl hover:bg-[#0d1520] transition-colors border border-transparent hover:border-[#1a2235]">
+              <Avatar className="h-10 w-10 border border-[#1a2235] flex-shrink-0">
+                <AvatarFallback className="bg-[#0f1729] text-[#e2e8f0] font-medium">
                   {comment.name.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="font-semibold text-[#e6edf3]">{comment.name}</span>
-                  <span className="text-xs text-[#7d8590]">
+                  <span className="font-semibold text-[#e2e8f0]">{comment.name}</span>
+                  <span className="text-xs text-[#3d4a5c] font-mono">
                     {new Date(comment.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                   </span>
                 </div>
-                <p className="text-[#8b949e] whitespace-pre-wrap text-sm leading-relaxed">{comment.content}</p>
+                <p className="text-[#6b7a8d] whitespace-pre-wrap text-sm leading-relaxed">{comment.content}</p>
               </div>
             </div>
           ))
@@ -138,42 +138,42 @@ export default function BlogComments({ blogId }: { blogId: string }) {
       </div>
 
       {/* Comment Form */}
-      <form onSubmit={handleSubmit} className="bg-[#0d1117] p-6 rounded-xl border border-[#30363d]">
+      <form onSubmit={handleSubmit} className="bg-[#070b14] p-6 rounded-xl border border-[#1a2235]">
         <h3 className="text-lg font-semibold text-white mb-4">Leave a comment</h3>
-        <p className="text-sm text-[#7d8590] mb-6">No account required. Share your thoughts anonymously.</p>
+        <p className="text-sm text-[#3d4a5c] mb-6">No account required. Share your thoughts anonymously.</p>
         
         {error && (
-          <div className="mb-4 p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm">
+          <div className="mb-4 p-3 bg-[#ff5288]/10 border border-[#ff5288]/30 rounded-lg text-[#ff5288] text-sm">
             {error}
           </div>
         )}
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-[#c9d1d9] mb-1">Display Name</label>
+            <label className="block text-sm font-medium text-[#c9d1d9] font-mono mb-1">Display Name</label>
             <Input 
               value={name} 
               onChange={(e) => setName(e.target.value)} 
               placeholder="John Doe" 
-              className="bg-[#161b22] border-[#30363d] text-white focus:border-[#58a6ff]" 
+              className="bg-[#0c1120] border-[#1a2235] text-white focus:border-[#00d4ff]" 
               maxLength={50}
             />
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-[#c9d1d9] mb-1">Comment</label>
+            <label className="block text-sm font-medium text-[#c9d1d9] font-mono mb-1">Comment</label>
             <Textarea 
               value={content} 
               onChange={(e) => setContent(e.target.value)} 
               placeholder="What are your thoughts?" 
-              className="bg-[#161b22] border-[#30363d] text-white focus:border-[#58a6ff] min-h-[120px]" 
+              className="bg-[#0c1120] border-[#1a2235] text-white focus:border-[#00d4ff] min-h-[120px]" 
               maxLength={1000}
             />
           </div>
 
-          <div className="bg-[#161b22] border border-[#30363d] p-4 rounded-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-2 text-sm text-[#8b949e]">
-              <ShieldCheck className="h-4 w-4 text-[#3fb950]" />
+          <div className="bg-[#0c1120] border border-[#1a2235] p-4 rounded-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-2 text-sm text-[#6b7a8d] font-mono">
+              <ShieldCheck className="h-4 w-4 text-[#00ff88]" />
               <span>Anti-spam check: <strong>What is {num1} + {num2}?</strong></span>
             </div>
             <div className="flex items-center gap-2">
@@ -181,10 +181,10 @@ export default function BlogComments({ blogId }: { blogId: string }) {
                 value={captchaAnswer}
                 onChange={(e) => setCaptchaAnswer(e.target.value)}
                 placeholder="Answer"
-                className="w-24 bg-[#0d1117] border-[#30363d] text-white text-center"
+                className="w-24 bg-[#0a0e17] border-[#1a2235] text-white text-center"
                 type="number"
               />
-              <Button type="button" variant="outline" size="icon" onClick={generateCaptcha} className="bg-[#21262d] border-[#30363d] hover:bg-[#30363d] text-white">
+              <Button type="button" variant="outline" size="icon" onClick={generateCaptcha} className="bg-[#0f1729] border-[#1a2235] hover:bg-[#1e293b] text-white">
                 <RefreshCw className="h-4 w-4" />
               </Button>
             </div>
@@ -194,7 +194,7 @@ export default function BlogComments({ blogId }: { blogId: string }) {
             <Button 
               type="submit" 
               disabled={submitting || !name || !content || !captchaAnswer} 
-              className="bg-[#238636] hover:bg-[#2ea043] text-white font-semibold flex items-center gap-2"
+              className="bg-[#00d4ff]/90 hover:bg-[#00d4ff] text-[#0a0e17] font-semibold font-mono flex items-center gap-2"
             >
               {submitting ? "Posting..." : "Post Comment"} <Send className="h-4 w-4" />
             </Button>

@@ -54,10 +54,10 @@ export default function TableOfContents({ content }: { content: string }) {
   if (headings.length === 0) return null
 
   return (
-    <div className="bg-[#161b22]/50 border border-[#30363d] rounded-2xl p-6 backdrop-blur-sm">
+    <div className="bg-[#0c1120]/80 border border-[#1a2235] rounded-2xl p-6 backdrop-blur-sm">
       <div className="flex items-center gap-3 mb-4">
-        <div className="h-4 w-1 bg-[#d2a8ff] rounded-full" />
-        <h3 className="text-lg font-bold text-white">Table of Contents</h3>
+        <div className="h-4 w-1 bg-[#a855f7]" />
+        <h3 className="text-lg font-bold text-[#e2e8f0] font-mono">table_of_contents</h3>
       </div>
       <nav className="flex flex-col gap-2.5 max-h-[40vh] overflow-y-auto pr-2 custom-scrollbar">
         {headings.map((h, i) => (
@@ -73,8 +73,8 @@ export default function TableOfContents({ content }: { content: string }) {
               "text-sm transition-colors block leading-tight",
               h.level === 3 ? "pl-4" : "",
               activeId === h.id 
-                ? "text-[#58a6ff] font-medium" 
-                : "text-[#7d8590] hover:text-[#c9d1d9]"
+                ? "text-[#00d4ff] font-medium border-l-2 border-[#00d4ff] pl-3" 
+                : "text-[#4a5568] hover:text-[#c9d1d9]"
             )}
           >
             {h.title}

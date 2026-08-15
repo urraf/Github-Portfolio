@@ -70,16 +70,16 @@ export default function BlogLikeButton({ blogId, initialLikes, className }: Blog
       onClick={handleLike}
       disabled={hasLiked || isLiking}
       className={cn(
-        "flex items-center gap-1.5 transition-all duration-300 rounded-full px-3 py-1",
+        "flex items-center gap-1.5 transition-all duration-300 rounded-full px-3 py-1 active:scale-95",
         hasLiked 
-          ? "bg-red-500/10 text-red-500 cursor-default" 
-          : "hover:bg-red-500/10 text-[#7d8590] hover:text-red-400 cursor-pointer",
+          ? "bg-[#ff5288]/10 text-[#ff5288] cursor-default" 
+          : "hover:bg-[#ff5288]/10 text-[#4a5568] hover:text-[#ff5288] cursor-pointer",
         className
       )}
       aria-label="Like this blog"
     >
       <Heart className={cn("h-4 w-4 transition-transform", hasLiked && "fill-current scale-110")} />
-      <span className="font-medium text-sm">{likes}</span>
+      <span className="font-medium text-sm font-mono">{likes}</span>
     </button>
   )
 }
