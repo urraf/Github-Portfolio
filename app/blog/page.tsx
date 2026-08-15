@@ -24,7 +24,7 @@ export default async function BlogListPage() {
   }))
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0d1117] text-[#e6edf3] relative">
+    <div className="min-h-screen flex flex-col bg-[#0a0e17] text-[#e2e8f0] relative">
       <AnimatedBackground />
       <BlogListClient blogs={blogs} />
     </div>

@@ -36,10 +36,10 @@ export default function AnimatedBackground() {
         this.vy = (Math.random() - 0.5) * 0.5
         this.radius = Math.random() * 2 + 1
         const colors = [
-          "rgba(88, 166, 255, 0.3)", // #58a6ff
-          "rgba(0, 226, 232, 0.2)", // #00e2e8
-          "rgba(35, 134, 54, 0.2)", // #238636
-          "rgba(255, 166, 87, 0.15)", // #ffa657
+          "rgba(0, 212, 255, 0.25)",    // #00d4ff cyan
+          "rgba(168, 85, 247, 0.2)",     // #a855f7 purple
+          "rgba(0, 255, 136, 0.15)",     // #00ff88 green
+          "rgba(255, 82, 136, 0.15)",    // #ff5288 pink
         ]
         this.color = colors[Math.floor(Math.random() * colors.length)]
       }
@@ -84,7 +84,7 @@ export default function AnimatedBackground() {
 
           if (distance < 150) {
             ctx.beginPath()
-            ctx.strokeStyle = `rgba(88, 166, 255, ${0.1 * (1 - distance / 150)})`
+            ctx.strokeStyle = `rgba(0, 212, 255, ${0.08 * (1 - distance / 150)})`
             ctx.lineWidth = 0.5
             ctx.moveTo(particles[i].x, particles[i].y)
             ctx.lineTo(particles[j].x, particles[j].y)
