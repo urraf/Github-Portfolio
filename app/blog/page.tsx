@@ -16,12 +16,6 @@ export default function BlogListPage() {
   const [blogs, setBlogs] = useState<Blog[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
-  const [navigatingTo, setNavigatingTo] = useState<string | null>(null)
-
-  // Reset navigating state if user comes back to the page
-  useEffect(() => {
-    setNavigatingTo(null)
-  }, [])
 
   useEffect(() => {
     fetch("/api/admin/blogs?public=true")
@@ -52,20 +46,9 @@ export default function BlogListPage() {
 
   // Blog card component
   const BlogCard = ({ blog, size = "normal" }: { blog: Blog; size?: "normal" | "small" | "horizontal" }) => {
-    const isNavigating = navigatingTo === blog.slug;
-
     if (size === "horizontal") {
       return (
-        <Link 
-          href={`/blog/${blog.slug}`} 
-          className="group relative block"
-          onClick={(e) => { if (!e.ctrlKey && !e.metaKey) setNavigatingTo(blog.slug) }}
-        >
-          {isNavigating && (
-            <div className="absolute inset-0 bg-[#0d1117]/60 backdrop-blur-sm z-10 flex items-center justify-center rounded-xl border border-[#58a6ff]/40">
-              <div className="h-5 w-5 border-2 border-[#58a6ff]/30 border-t-[#58a6ff] rounded-full animate-spin" />
-            </div>
-          )}
+        <Link href={`/blog/${blog.slug}`} className="group">
           <div className="flex gap-4 items-start p-3 rounded-xl hover:bg-[#161b22] transition-colors">
             <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 border border-[#30363d]">
               {blog.imageUrl ? (
@@ -88,19 +71,7 @@ export default function BlogListPage() {
     }
 
     return (
-      <Link 
-        href={`/blog/${blog.slug}`} 
-        className="h-full group relative block"
-        onClick={(e) => { if (!e.ctrlKey && !e.metaKey) setNavigatingTo(blog.slug) }}
-      >
-        {isNavigating && (
-          <div className="absolute inset-0 bg-[#0d1117]/60 backdrop-blur-sm z-20 flex items-center justify-center rounded-xl border border-[#58a6ff]/40">
-            <div className="flex flex-col items-center gap-2">
-              <div className="h-6 w-6 border-2 border-[#58a6ff]/30 border-t-[#58a6ff] rounded-full animate-spin" />
-              <span className="text-xs text-white font-medium">Opening...</span>
-            </div>
-          </div>
-        )}
+      <Link href={`/blog/${blog.slug}`} className="h-full group">
         <Card className="bg-[#161b22]/80 backdrop-blur-sm border-[#30363d] hover:border-[#58a6ff]/40 transition-all duration-500 cursor-pointer h-full flex flex-col overflow-hidden hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-[#58a6ff]/5">
           <div className="w-full h-48 relative overflow-hidden bg-[#0d1117]">
             {blog.imageUrl ? (
@@ -222,19 +193,7 @@ export default function BlogListPage() {
             {/* ====== HERO SECTION ====== */}
             {featured && (
               <section>
-                <Link 
-                  href={`/blog/${featured.slug}`} 
-                  className="group block relative"
-                  onClick={(e) => { if (!e.ctrlKey && !e.metaKey) setNavigatingTo(featured.slug) }}
-                >
-                  {navigatingTo === featured.slug && (
-                    <div className="absolute inset-0 bg-[#0d1117]/60 backdrop-blur-sm z-20 flex items-center justify-center rounded-2xl border border-[#58a6ff]/40">
-                      <div className="flex flex-col items-center gap-3">
-                         <div className="h-8 w-8 border-4 border-[#58a6ff]/30 border-t-[#58a6ff] rounded-full animate-spin" />
-                         <span className="text-white font-medium shadow-sm">Opening article...</span>
-                      </div>
-                    </div>
-                  )}
+                <Link href={`/blog/${featured.slug}`} className="group block">
                   <div className="relative rounded-2xl overflow-hidden border border-[#30363d] hover:border-[#58a6ff]/40 transition-all duration-500 shadow-2xl hover:shadow-[#58a6ff]/10">
                     <div className="relative h-[320px] sm:h-[420px] md:h-[480px]">
                       {featured.imageUrl ? (
@@ -352,17 +311,7 @@ export default function BlogListPage() {
                     </div>
                     <div className="space-y-1">
                       {trending.map((blog, i) => (
-                        <Link 
-                          key={blog.id} 
-                          href={`/blog/${blog.slug}`} 
-                          className="group flex items-start gap-3 p-2.5 rounded-lg hover:bg-[#21262d] transition-colors relative"
-                          onClick={(e) => { if (!e.ctrlKey && !e.metaKey) setNavigatingTo(blog.slug) }}
-                        >
-                          {navigatingTo === blog.slug && (
-                            <div className="absolute inset-0 bg-[#0d1117]/60 backdrop-blur-sm z-10 flex items-center justify-center rounded-lg border border-[#58a6ff]/40">
-                              <div className="h-4 w-4 border-2 border-[#58a6ff]/30 border-t-[#58a6ff] rounded-full animate-spin" />
-                            </div>
-                          )}
+                        <Link key={blog.id} href={`/blog/${blog.slug}`} className="group flex items-start gap-3 p-2.5 rounded-lg hover:bg-[#21262d] transition-colors">
                           <span className="text-2xl font-extrabold text-[#30363d] group-hover:text-[#58a6ff] transition-colors w-7 flex-shrink-0 leading-none mt-0.5">
                             {String(i + 1).padStart(2, '0')}
                           </span>
