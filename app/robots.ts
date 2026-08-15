@@ -1,13 +1,14 @@
 import { MetadataRoute } from 'next';
 
 export default function robots(): MetadataRoute.Robots {
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://github-portfolio-nahraf.vercel.app";
   return {
     rules: {
       userAgent: '*',
       allow: '/',
       disallow: ['/admin', '/api'],
     },
-    sitemap: 'https://www.nahraf.com/sitemap.xml',
-    host: 'https://www.nahraf.com',
+    sitemap: `${baseUrl}/sitemap.xml`,
+    host: baseUrl,
   };
 }

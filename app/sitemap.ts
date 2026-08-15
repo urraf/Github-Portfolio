@@ -10,8 +10,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .project({ slug: 1, publishedAt: 1 })
     .toArray();
 
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://github-portfolio-nahraf.vercel.app";
+
   const blogEntries: MetadataRoute.Sitemap = publishedBlogs.map((blog) => ({
-    url: `https://www.nahraf.com/blog/${blog.slug}`,
+    url: `${baseUrl}/blog/${blog.slug}`,
     lastModified: blog.publishedAt ? new Date(blog.publishedAt) : new Date(),
     changeFrequency: 'weekly',
     priority: 0.8,
@@ -19,25 +21,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     {
-      url: 'https://www.nahraf.com',
+      url: `${baseUrl}`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 1.0,
     },
     {
-      url: 'https://www.nahraf.com/blog',
+      url: `${baseUrl}/blog`,
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.9,
     },
     {
-      url: 'https://www.nahraf.com/client-work',
+      url: `${baseUrl}/client-work`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.7,
     },
     {
-      url: 'https://www.nahraf.com/project-overview',
+      url: `${baseUrl}/project-overview`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.7,
