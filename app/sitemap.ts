@@ -10,7 +10,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .project({ slug: 1, publishedAt: 1 })
     .toArray();
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://github-portfolio-nahraf.vercel.app";
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://github-portfolio-kghg.onrender.com";
 
   const blogEntries: MetadataRoute.Sitemap = publishedBlogs.map((blog) => ({
     url: `${baseUrl}/blog/${blog.slug}`,

@@ -9,12 +9,12 @@ export const metadata: Metadata = {
     "Read Farhan's latest articles on software engineering, distributed systems, AI, full-stack development, and career growth. Deep dives into the tech that powers modern applications.",
   keywords: ["tech blog", "software engineering", "AI", "full-stack development", "distributed systems", "backend", "tutorials"],
   alternates: {
-    canonical: `${process.env.NEXT_PUBLIC_SITE_URL || "https://github-portfolio-nahraf.vercel.app"}/blog`,
+    canonical: `${process.env.NEXT_PUBLIC_SITE_URL || "https://github-portfolio-kghg.onrender.com"}/blog`,
   },
   openGraph: {
     title: "Farhan's Tech Blog",
     description: "Deep dives into software engineering, AI, distributed systems, and building at scale.",
-    url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://github-portfolio-nahraf.vercel.app"}/blog`,
+    url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://github-portfolio-kghg.onrender.com"}/blog`,
     type: "website",
   },
 }

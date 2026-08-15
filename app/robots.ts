@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://github-portfolio-nahraf.vercel.app";
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://github-portfolio-kghg.onrender.com";
   return {
     rules: {
       userAgent: '*',

@@ -81,7 +81,7 @@ const getBlogData = cache(async (slug: string) => {
   return { blog, recommendedBlogs }
 })
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://github-portfolio-nahraf.vercel.app"
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://github-portfolio-kghg.onrender.com"
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const resolvedParams = await params;

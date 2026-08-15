@@ -13,7 +13,7 @@ export async function GET() {
     .sort({ publishedAt: -1 })
     .toArray();
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://github-portfolio-nahraf.vercel.app';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://github-portfolio-kghg.onrender.com';
   const feedUrl = `${baseUrl}/feed.xml`;
 
   const itemsXml = publishedBlogs
