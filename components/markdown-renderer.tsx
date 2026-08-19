@@ -75,6 +75,41 @@ export default function MarkdownRenderer({ content, className = "", isEditable =
     return () => cleanupFns.forEach(fn => fn())
   }, [content, isEditable, onContentChange])
 
+  // Copy code blocks
+  useEffect(() => {
+    if (!containerRef.current) return
+    const container = containerRef.current
+    const copyBtns = container.querySelectorAll<HTMLButtonElement>('.copy-code-btn')
+    
+    const handlers = Array.from(copyBtns).map(btn => {
+      const handler = async () => {
+        try {
+          const code = decodeURIComponent(btn.getAttribute('data-code') || '')
+          await navigator.clipboard.writeText(code)
+          
+          const copyIcon = btn.querySelector('.copy-icon')
+          const checkIcon = btn.querySelector('.check-icon')
+          
+          if (copyIcon) copyIcon.classList.add('hidden')
+          if (checkIcon) checkIcon.classList.remove('hidden')
+          
+          setTimeout(() => {
+            if (copyIcon) copyIcon.classList.remove('hidden')
+            if (checkIcon) checkIcon.classList.add('hidden')
+          }, 2000)
+        } catch (err) {
+          console.error('Failed to copy code:', err)
+        }
+      }
+      btn.addEventListener('click', handler)
+      return { btn, handler }
+    })
+    
+    return () => {
+      handlers.forEach(({ btn, handler }) => btn.removeEventListener('click', handler))
+    }
+  }, [content])
+
   const renderMarkdown = (text: string): string => {
     let html = text
 
@@ -83,8 +118,9 @@ export default function MarkdownRenderer({ content, className = "", isEditable =
     html = html.replace(/```(\w+)?\n([\s\S]*?)```/g, (_, lang, code) => {
       const idx = codeBlocks.length
       const escaped = code.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      const encodedCode = encodeURIComponent(code)
       codeBlocks.push(
-        `<pre class="bg-[#070b14] border border-[#1a2235] rounded-xl p-5 my-6 overflow-x-auto"><div class="flex items-center gap-2 mb-3 text-[#484f58] text-xs font-mono">${lang ? `<span class="bg-[#0c1120] px-2 py-0.5 rounded text-[#4a5568]">${lang}</span>` : ''}</div><code class="text-[#e2e8f0] text-sm font-mono leading-relaxed">${escaped}</code></pre>`
+        `<div class="relative group my-6"><pre class="bg-[#070b14] border border-[#1a2235] rounded-xl p-5 overflow-x-auto"><div class="flex items-center gap-2 mb-3 text-[#484f58] text-xs font-mono">${lang ? `<span class="bg-[#0c1120] px-2 py-0.5 rounded text-[#4a5568]">${lang}</span>` : ''}</div><code class="text-[#e2e8f0] text-sm font-mono leading-relaxed">${escaped}</code></pre><button class="copy-code-btn absolute top-3 right-3 bg-[#1e293b]/50 hover:bg-[#1e293b] text-[#8892a4] hover:text-[#00d4ff] p-1.5 rounded-md opacity-0 group-hover:opacity-100 transition-all backdrop-blur-sm border border-transparent hover:border-[#2a3a55]" data-code="${encodedCode}" title="Copy code"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="copy-icon"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="check-icon hidden"><polyline points="20 6 9 17 4 12"/></svg></button></div>`
       )
       return `%%CODEBLOCK_${idx}%%`
     })
