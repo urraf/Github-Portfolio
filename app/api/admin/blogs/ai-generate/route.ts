@@ -44,7 +44,7 @@ Format your response AS A STRICT JSON OBJECT with exactly the following schema. 
 
     const result = await generateText({
       // @ts-ignore
-      model: groq('llama-3.3-70b-versatile'),
+      model: groq('openai/gpt-oss-20b'),
       system: 'You are a JSON-only API. Output strictly valid JSON.',
       prompt: prompt,
       temperature: 0.7,
