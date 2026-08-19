@@ -12,6 +12,7 @@ import BlogLikeButton from "@/components/blog-like-button"
 import BlogViewTracker from "@/components/blog-view-tracker"
 import TableOfContents from "@/components/table-of-contents"
 import BlogAIChat from "@/components/blog-ai-chat"
+import ScrollProgress from "@/components/scroll-progress"
 import { getDb } from '@/lib/mongodb'
 
 interface Blog {
@@ -204,6 +205,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
 
+      <ScrollProgress />
       <AnimatedBackground />
       <BlogAIChat blogContext={{ title: blog.title, tags: blog.tags, content: blog.content }} />
 
