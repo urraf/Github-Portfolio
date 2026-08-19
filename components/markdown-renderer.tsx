@@ -125,6 +125,11 @@ export default function MarkdownRenderer({ content, className = "", isEditable =
       return `%%CODEBLOCK_${idx}%%`
     })
 
+    // Tables (extract them so they aren't messed up by paragraph wrapping or HTML escaping)
+    // Wait, tables might have bold/italic inside them! So we should parse inline elements FIRST.
+    // Actually, to make it simple, we will just parse tables after inline styles, but store them so paragraphs don't break them.
+    // We'll leave table parsing later down the chain, but let's just make the regex more robust first!
+
     // Inline code (before escaping)
     const inlineCodes: string[] = []
     html = html.replace(/`([^`]+)`/g, (_, code) => {
@@ -189,11 +194,15 @@ export default function MarkdownRenderer({ content, className = "", isEditable =
       '<a href="$2" class="text-[#00d4ff] hover:text-[#38bdf8] underline decoration-[#00d4ff]/30 hover:decoration-[#00d4ff] transition-colors" target="_blank" rel="noopener noreferrer">$1</a>'
     )
 
-    // Tables
+    const extractedTables: string[] = []
     html = html.replace(
-      /^\|(.+)\|\s*\n\|([- :|]+)\|\s*\n((?:\|.*\|\s*\n?)*)/gm,
+      /^[ \t]*\|(.+)\|\s*\n[ \t]*\|([- :|]+)\|\s*\n((?:[ \t]*\|.*\|\s*\n?)*)/gm,
       (match, headerRow, separatorRow, bodyRows) => {
-        const parseCells = (rowStr: string) => rowStr.split('|').slice(1, -1).map(c => c.trim());
+        const parseCells = (rowStr: string) => {
+          const trimmed = rowStr.trim();
+          const inner = trimmed.replace(/^\|/, '').replace(/\|$/, '');
+          return inner.split('|').map(c => c.trim());
+        };
         const headers = parseCells(`|${headerRow}|`);
         const body = bodyRows.trim().split('\n').filter((r: string) => r.trim().startsWith('|'));
         
@@ -204,7 +213,9 @@ export default function MarkdownRenderer({ content, className = "", isEditable =
           return `<tr class="hover:bg-[#1e293b]/30 transition-colors">${cells.map(cell => `<td class="px-4 py-3 border-b border-[#1e293b] text-[#cbd5e1] align-top">${cell}</td>`).join('')}</tr>`;
         }).join('');
         
-        return `<div class="overflow-x-auto my-6 border border-[#1e293b] rounded-xl shadow-sm"><table class="w-full text-sm text-left border-collapse"><thead>${headerHtml}</thead><tbody class="divide-y divide-[#1e293b] bg-[#0b1121]/50">${bodyHtml}</tbody></table></div>\n`;
+        const idx = extractedTables.length;
+        extractedTables.push(`<div class="overflow-x-auto my-6 border border-[#1e293b] rounded-xl shadow-sm"><table class="w-full text-sm text-left border-collapse"><thead>${headerHtml}</thead><tbody class="divide-y divide-[#1e293b] bg-[#0b1121]/50">${bodyHtml}</tbody></table></div>`);
+        return `\n\n%%TABLE_${idx}%%\n\n`;
       }
     )
 
@@ -222,9 +233,14 @@ export default function MarkdownRenderer({ content, className = "", isEditable =
     html = html.replace(/<p class="text-\[#e2e8f0\] leading-relaxed mb-4"><\/p>/g, '')
     html = html.replace(/<p class="text-\[#e2e8f0\] leading-relaxed mb-4"><br \/><\/p>/g, '')
 
-    // Restore code blocks and inline codes
+    // Restore code blocks, inline codes, and tables
     codeBlocks.forEach((block, i) => { html = html.replace(`%%CODEBLOCK_${i}%%`, block) })
     inlineCodes.forEach((code, i) => { html = html.replace(`%%INLINECODE_${i}%%`, code) })
+    extractedTables.forEach((table, i) => { 
+      // Also remove any wrapping paragraph tags that might have accidentally surrounded the placeholder
+      html = html.replace(new RegExp(`<p[^>]*>%%TABLE_${i}%%</p>`), table);
+      html = html.replace(`%%TABLE_${i}%%`, table);
+    })
 
     return html
   }
