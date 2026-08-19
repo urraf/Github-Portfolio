@@ -44,6 +44,7 @@ export default function BlogListClient({ blogs }: { blogs: BlogMeta[] }) {
   const [searchQuery, setSearchQuery] = useState("")
   const [searchOpen, setSearchOpen] = useState(false)
   const [selectedTag, setSelectedTag] = useState<string | null>(null)
+  const [selectedIndex, setSelectedIndex] = useState(0)
   const [mounted, setMounted] = useState(false)
   const searchRef = useRef<HTMLInputElement>(null)
 
@@ -73,6 +74,33 @@ export default function BlogListClient({ blogs }: { blogs: BlogMeta[] }) {
     )
     return result
   }, [blogs, searchQuery, selectedTag])
+
+  // Reset selected index when search query changes
+  useEffect(() => {
+    setSelectedIndex(0)
+  }, [searchQuery])
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!searchQuery) return;
+    
+    const resultsCount = Math.min(8, filteredBlogs.length)
+    if (resultsCount === 0) return;
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault()
+      setSelectedIndex(prev => (prev + 1) % resultsCount)
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault()
+      setSelectedIndex(prev => (prev - 1 + resultsCount) % resultsCount)
+    } else if (e.key === "Enter") {
+      e.preventDefault()
+      const selectedBlog = filteredBlogs[selectedIndex]
+      if (selectedBlog) {
+        window.location.href = `/blog/${selectedBlog.slug}`
+        setSearchOpen(false)
+      }
+    }
+  }
   const [featuredIndex, setFeaturedIndex] = useState(0)
 
   // Cycle through top 4 posts every 8 seconds
@@ -200,6 +228,7 @@ export default function BlogListClient({ blogs }: { blogs: BlogMeta[] }) {
                 placeholder="Search articles, tags, topics..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleKeyDown}
                 autoFocus
                 className="flex-1 bg-transparent text-[#e2e8f0] placeholder:text-[#2a3650] outline-none text-sm font-mono"
               />
@@ -212,8 +241,8 @@ export default function BlogListClient({ blogs }: { blogs: BlogMeta[] }) {
                 {filteredBlogs.length === 0 ? (
                   <div className="p-8 text-center text-[#3d4a5c] text-sm">No results for &quot;{searchQuery}&quot;</div>
                 ) : (
-                  filteredBlogs.slice(0, 8).map(blog => (
-                    <Link key={blog.id} href={`/blog/${blog.slug}`} onClick={() => setSearchOpen(false)} className="group flex items-center gap-3 p-3 rounded-xl hover:bg-[#111b2e] transition-colors">
+                  filteredBlogs.slice(0, 8).map((blog, index) => (
+                    <Link key={blog.id} href={`/blog/${blog.slug}`} onClick={() => setSearchOpen(false)} className={`group flex items-center gap-3 p-3 rounded-xl transition-colors ${index === selectedIndex ? 'bg-[#111b2e]' : 'hover:bg-[#111b2e]'}`}>
                       <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 border border-[#1e293b]">
                         {blog.imageUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
