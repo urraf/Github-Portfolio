@@ -28,6 +28,9 @@ interface Blog {
   imageUrl?: string;
   likes?: number;
   views?: number;
+  metaTitle?: string;
+  metaDescription?: string;
+  category?: string;
 }
 
 // Tag color mapping
@@ -55,7 +58,7 @@ const STRIPE_GRADIENTS = [
 const getBlogData = cache(async (slug: string) => {
   const db = await getDb()
   const rawBlog = await db.collection('blogs').findOne({ slug, published: true })
-  
+
   if (!rawBlog) return null
 
   const blog: Blog = {
@@ -90,7 +93,7 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://github-portfolio-k
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
   const data = await getBlogData(resolvedParams.slug)
-  
+
   if (!data?.blog) {
     return { title: 'Post Not Found | Farhan' }
   }
@@ -99,16 +102,16 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const blogUrl = `${SITE_URL}/blog/${blog.slug}`
 
   return {
-    title: blog.title,
-    description: blog.excerpt,
+    title: blog.metaTitle || blog.title,
+    description: blog.metaDescription || blog.excerpt,
     keywords: blog.tags,
     authors: [{ name: 'Farhan', url: SITE_URL }],
     alternates: {
       canonical: blogUrl,
     },
     openGraph: {
-      title: blog.title,
-      description: blog.excerpt,
+      title: blog.metaTitle || blog.title,
+      description: blog.metaDescription || blog.excerpt,
       url: blogUrl,
       siteName: "Farhan's Tech Blog",
       type: 'article',
@@ -119,8 +122,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     },
     twitter: {
       card: 'summary_large_image',
-      title: blog.title,
-      description: blog.excerpt,
+      title: blog.metaTitle || blog.title,
+      description: blog.metaDescription || blog.excerpt,
       images: blog.imageUrl ? [blog.imageUrl] : [],
     },
     robots: {
@@ -234,14 +237,19 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       </header>
 
       <main className="mx-auto max-w-7xl px-4 py-10 sm:py-14 relative z-10 flex flex-col lg:flex-row gap-12">
-        
+
         {/* Left Column - Main Content */}
         <div className="flex-1 lg:max-w-4xl w-full">
           <article>
             {/* Article Header */}
             <header className="mb-10">
-              {blog.tags.length > 0 && (
+              {(blog.tags.length > 0 || blog.category) && (
                 <div className="flex flex-wrap gap-2 mb-6">
+                  {blog.category && (
+                    <Badge className="text-xs font-mono px-3 py-1 border bg-[#1f6feb]/10 text-[#58a6ff] border-[#1f6feb]/20">
+                      {blog.category}
+                    </Badge>
+                  )}
                   {blog.tags.map((tag, i) => {
                     const color = getTagColor(i)
                     return (
@@ -287,8 +295,8 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             {blog.imageUrl && (
               <div className="w-full h-64 sm:h-80 md:h-96 relative overflow-hidden rounded-2xl mb-12 shadow-2xl shadow-black/30 border border-[#1a2235] group">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img 
-                  src={blog.imageUrl} 
+                <img
+                  src={blog.imageUrl}
                   alt={blog.title}
                   className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.02]"
                 />
@@ -315,7 +323,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         <aside className="hidden lg:block w-[340px] flex-shrink-0">
           <div className="sticky top-24 space-y-6">
             <TableOfContents content={blog.content} />
-            
+
             {/* Author Card */}
             <div className="bg-[#0c1120]/80 border border-[#1a2235] rounded-2xl overflow-hidden backdrop-blur-sm">
               <div className="h-14 relative overflow-hidden">

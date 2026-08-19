@@ -41,6 +41,9 @@ export async function PUT(
       content: blogData.content ?? existing.content,
       excerpt: blogData.excerpt ?? existing.excerpt,
       tags: blogData.tags ?? existing.tags,
+      category: blogData.category ?? existing.category ?? '',
+      metaTitle: blogData.metaTitle ?? existing.metaTitle ?? '',
+      metaDescription: blogData.metaDescription ?? existing.metaDescription ?? '',
       published: blogData.published ?? existing.published,
       imageUrl: blogData.imageUrl ?? existing.imageUrl ?? '',
       likes: blogData.likes ?? existing.likes ?? 0,
@@ -49,7 +52,12 @@ export async function PUT(
 
     await db.collection('blogs').updateOne(filter, { $set: updateData });
 
-    const updated = { id, ...updateData, publishedAt: existing.publishedAt, imageUrl: updateData.imageUrl, likes: updateData.likes };
+    const updated = {
+      id,
+      ...updateData,
+      publishedAt: existing.publishedAt,
+      views: existing.views ?? 0,
+    };
     return NextResponse.json(updated);
   } catch (error) {
     console.error('Error updating blog:', error);
