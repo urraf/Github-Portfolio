@@ -19,6 +19,7 @@ import {
   Settings,
   FileCode,
   HandCoins,
+  Command,
 } from "lucide-react"
 import { useState } from "react"
 
@@ -54,11 +55,17 @@ export default function AdminSidebar() {
       {/* Header */}
       <div className="p-4 border-b border-[#21262d] flex items-center justify-between">
         {!collapsed && (
-          <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-[#238636] to-[#58a6ff] flex items-center justify-center">
-              <FileText className="h-4 w-4 text-white" />
+          <div className="flex items-center gap-3">
+            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-[#8b5cf6] to-[#3b82f6] p-[1px] shadow-[0_0_10px_rgba(139,92,246,0.3)] relative group cursor-pointer">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#8b5cf6] to-[#3b82f6] blur opacity-50 group-hover:opacity-100 transition-opacity rounded-lg" />
+              <div className="h-full w-full rounded-[7px] bg-[#010409] flex items-center justify-center relative z-10">
+                <Command className="h-4 w-4 text-[#a78bfa]" />
+              </div>
             </div>
-            <span className="text-white font-semibold text-sm">Admin Panel</span>
+            <div className="flex flex-col">
+              <span className="text-[#e6edf3] font-bold text-[13px] tracking-wide leading-none mb-0.5">NEXUS</span>
+              <span className="text-[#58a6ff] text-[9px] font-mono tracking-widest leading-none">SYS.ADMIN</span>
+            </div>
           </div>
         )}
         <button

@@ -41,7 +41,7 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-[#0d1117] flex">
+    <div className="h-screen bg-[#0d1117] flex overflow-hidden">
       <AdminSidebar />
       <main className="flex-1 overflow-auto">
         <div className="p-6 lg:p-8 max-w-7xl mx-auto">

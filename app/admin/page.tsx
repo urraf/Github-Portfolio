@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Lock, FileText, AlertCircle, Eye, EyeOff, ShieldCheck } from "lucide-react"
+import { Lock, Command, AlertCircle, Eye, EyeOff, ShieldCheck, TerminalSquare } from "lucide-react"
 
 function generateCaptcha() {
   const a = Math.floor(Math.random() * 20) + 1
@@ -73,32 +73,41 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0d1117] flex items-center justify-center p-4 relative overflow-hidden">
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 -left-1/4 w-96 h-96 bg-[#238636]/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 -right-1/4 w-96 h-96 bg-[#58a6ff]/5 rounded-full blur-3xl" />
+    <div className="min-h-screen bg-[#010409] flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Dynamic tech background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]" />
+        <div className="absolute top-1/4 -left-1/4 w-[600px] h-[600px] bg-[#8b5cf6]/10 rounded-full blur-[120px]" />
+        <div className="absolute bottom-1/4 -right-1/4 w-[600px] h-[600px] bg-[#3b82f6]/10 rounded-full blur-[120px]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(ellipse_80%_80%_at_50%_50%,rgba(1,4,9,0)_40%,rgba(1,4,9,1)_100%)]" />
       </div>
 
-      <Card className="w-full max-w-md bg-[#161b22] border-[#30363d] relative z-10 shadow-2xl shadow-black/50">
-        <CardHeader className="text-center pb-4 pt-8">
-          <div className="mx-auto mb-4 h-16 w-16 rounded-2xl bg-gradient-to-br from-[#238636] to-[#58a6ff] flex items-center justify-center shadow-lg shadow-[#238636]/20">
-            <FileText className="h-8 w-8 text-white" />
+      <Card className="w-full max-w-md bg-[#0d1117]/80 backdrop-blur-xl border-[#3b82f6]/20 relative z-10 shadow-[0_0_50px_rgba(59,130,246,0.1)]">
+        <div className="absolute inset-x-0 -top-[1px] mx-auto h-[1px] w-1/2 bg-gradient-to-r from-transparent via-[#8b5cf6] to-transparent" />
+        
+        <CardHeader className="text-center pb-6 pt-10">
+          <div className="mx-auto mb-6 h-16 w-16 rounded-2xl bg-gradient-to-br from-[#8b5cf6] to-[#3b82f6] p-[1px] shadow-[0_0_20px_rgba(139,92,246,0.4)] relative group cursor-pointer">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#8b5cf6] to-[#3b82f6] blur-md opacity-50 group-hover:opacity-100 transition-opacity rounded-2xl" />
+            <div className="h-full w-full rounded-[15px] bg-[#010409] flex items-center justify-center relative z-10">
+              <Command className="h-8 w-8 text-[#a78bfa]" />
+            </div>
           </div>
-          <CardTitle className="text-2xl font-bold text-white">Admin Dashboard</CardTitle>
-          <p className="text-[#7d8590] text-sm mt-1">Enter your password to access the dashboard</p>
+          <CardTitle className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#e6edf3] to-[#8b5cf6] tracking-tight">NEXUS</CardTitle>
+          <p className="text-[#3b82f6] text-[11px] font-mono tracking-[0.3em] mt-2">SYS.ADMIN_AUTH</p>
         </CardHeader>
-        <CardContent className="pb-8 px-8">
-          <form onSubmit={handleLogin} className="space-y-5">
+
+        <CardContent className="pb-10 px-8">
+          <form onSubmit={handleLogin} className="space-y-6">
             {error && (
-              <div className="flex items-center gap-2 p-3 rounded-lg bg-[#f85149]/10 border border-[#f85149]/20 text-[#f85149] text-sm">
+              <div className="flex items-center gap-2 p-3 rounded-lg bg-[#f85149]/10 border border-[#f85149]/30 text-[#ff7b72] text-xs font-mono">
                 <AlertCircle className="h-4 w-4 flex-shrink-0" />
                 <span>{error}</span>
               </div>
             )}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-[#e6edf3] flex items-center gap-2">
-                <Lock className="h-3.5 w-3.5 text-[#7d8590]" />
-                Password
+              <label className="text-[10px] font-mono text-[#a78bfa] flex items-center gap-2 uppercase tracking-widest">
+                <Lock className="h-3 w-3" />
+                Auth_Key
               </label>
               <div className="relative">
                 <Input
@@ -106,13 +115,13 @@ export default function AdminLoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter admin password"
-                  className="bg-[#0d1117] border-[#30363d] text-white placeholder:text-[#484f58] focus-visible:ring-[#58a6ff] pr-10 h-11"
+                  className="bg-[#010409]/50 border-[#3b82f6]/30 text-[#e6edf3] placeholder:text-[#484f58] focus-visible:ring-[#8b5cf6]/50 focus-visible:border-[#8b5cf6] pr-10 h-12 font-mono transition-all text-sm shadow-inner"
                   autoFocus
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#7d8590] hover:text-white transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#7d8590] hover:text-[#e6edf3] transition-colors"
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
@@ -121,18 +130,19 @@ export default function AdminLoginPage() {
 
             {/* CAPTCHA */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-[#e6edf3] flex items-center gap-2">
-                <ShieldCheck className="h-3.5 w-3.5 text-[#7d8590]" />
-                Security Check
+              <label className="text-[10px] font-mono text-[#a78bfa] flex items-center gap-2 uppercase tracking-widest">
+                <ShieldCheck className="h-3 w-3" />
+                Security_Protocol
               </label>
               <div className="flex items-center gap-3">
-                <div className="flex-1 bg-[#0d1117] border border-[#30363d] rounded-lg px-4 py-2.5 select-none">
-                  <span className="text-[#58a6ff] font-mono text-lg font-bold tracking-wider">{captcha.question}</span>
+                <div className="flex-1 bg-[#010409]/50 border border-[#3b82f6]/30 rounded-lg px-4 py-3 select-none flex items-center justify-center shadow-inner">
+                  <span className="text-[#60a5fa] font-mono text-lg font-bold tracking-widest">{captcha.question}</span>
                 </div>
                 <button
                   type="button"
                   onClick={refreshCaptcha}
-                  className="p-2.5 rounded-lg bg-[#21262d] border border-[#30363d] text-[#7d8590] hover:text-white hover:bg-[#30363d] transition-colors text-xs"
+                  className="p-3.5 rounded-lg bg-[#0d1117] border border-[#3b82f6]/30 text-[#7d8590] hover:text-[#e6edf3] hover:border-[#8b5cf6] hover:shadow-[0_0_10px_rgba(139,92,246,0.2)] transition-all"
+                  title="Generate new challenge"
                 >
                   ↻
                 </button>
@@ -141,23 +151,23 @@ export default function AdminLoginPage() {
                 type="number"
                 value={captchaInput}
                 onChange={(e) => setCaptchaInput(e.target.value)}
-                placeholder="Your answer"
-                className="bg-[#0d1117] border-[#30363d] text-white placeholder:text-[#484f58] focus-visible:ring-[#58a6ff] h-11"
+                placeholder="Response..."
+                className="bg-[#010409]/50 border-[#3b82f6]/30 text-[#e6edf3] placeholder:text-[#484f58] focus-visible:ring-[#8b5cf6]/50 focus-visible:border-[#8b5cf6] h-12 font-mono text-center text-lg transition-all shadow-inner"
               />
             </div>
 
             <Button
               type="submit"
               disabled={loading || !password || !captchaInput}
-              className="w-full bg-[#238636] hover:bg-[#2ea043] text-white border-0 h-11 font-medium transition-all disabled:opacity-50"
+              className="w-full bg-gradient-to-r from-[#8b5cf6] to-[#3b82f6] hover:from-[#7c3aed] hover:to-[#2563eb] text-white border-0 h-12 font-bold tracking-widest uppercase transition-all shadow-[0_0_20px_rgba(139,92,246,0.3)] hover:shadow-[0_0_30px_rgba(139,92,246,0.5)] mt-2 disabled:opacity-50 disabled:shadow-none text-xs"
             >
               {loading ? (
                 <div className="flex items-center gap-2">
-                  <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Authenticating...
+                  <TerminalSquare className="h-4 w-4 animate-pulse" />
+                  INITIALIZING...
                 </div>
               ) : (
-                "Sign In"
+                "ESTABLISH_CONNECTION"
               )}
             </Button>
           </form>

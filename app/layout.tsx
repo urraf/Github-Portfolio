@@ -67,10 +67,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-      className="__variable_5cfdac __variable_9a8899 antialiased vsc-initialized"
-      >
+    <html lang="en" className="dark">
+      <body className="antialiased">
         {children}
       </body>
     </html>

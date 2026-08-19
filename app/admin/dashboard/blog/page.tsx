@@ -83,6 +83,8 @@ export default function BlogManagerPage() {
   const [showSortDropdown, setShowSortDropdown] = useState(false)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [bulkActioning, setBulkActioning] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
 
   // ── Editor State ───────────────────────────────────────────────────
   const [editing, setEditing] = useState<Blog | null>(null)
@@ -453,6 +455,14 @@ export default function BlogManagerPage() {
         default: return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
       }
     })
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [searchQuery, statusFilter, sortBy])
+
+  const totalPages = Math.ceil(filteredBlogs.length / itemsPerPage)
+  const paginatedBlogs = filteredBlogs.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
 
   // ── Stats ──────────────────────────────────────────────────────────
   const totalPosts = blogs.length
@@ -1056,7 +1066,7 @@ export default function BlogManagerPage() {
         </Card>
       ) : (
         <div className="space-y-3">
-          {filteredBlogs.map(blog => (
+          {paginatedBlogs.map(blog => (
             <Card key={blog.id} className="bg-[#161b22] border-[#30363d] hover:border-[#484f58] transition-colors">
               <CardContent className="p-5">
                 <div className="flex items-start gap-4">
@@ -1149,6 +1159,34 @@ export default function BlogManagerPage() {
               </CardContent>
             </Card>
           ))}
+          
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between pt-4 pb-10">
+              <span className="text-xs text-[#7d8590]">
+                Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filteredBlogs.length)} of {filteredBlogs.length} posts
+              </span>
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  variant="outline"
+                  size="sm"
+                  className="border-[#30363d] text-[#e6edf3] bg-[#0d1117] hover:bg-[#21262d]"
+                >
+                  Previous
+                </Button>
+                <Button
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  variant="outline"
+                  size="sm"
+                  className="border-[#30363d] text-[#e6edf3] bg-[#0d1117] hover:bg-[#21262d]"
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

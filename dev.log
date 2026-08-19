@@ -1,0 +1,491 @@
+
+> github-portfolio@0.1.0 dev
+> next dev
+
+ ⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of /Users/farhan/package-lock.json as the root directory.
+ To silence this warning, set `outputFileTracingRoot` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/output#caveats for more information.
+ Detected additional lockfiles: 
+   * /Users/farhan/Desktop/Github-Portfolio/package-lock.json
+
+ ⚠ Port 3000 is in use by process 61581, using available port 3001 instead.
+   ▲ Next.js 15.5.15
+   - Local:        http://localhost:3001
+   - Network:      http://192.168.1.19:3001
+   - Environments: .env.local
+
+ ✓ Starting...
+[Browserslist] Could not parse /Users/farhan/package.json. Ignoring it.
+ ✓ Compiled /instrumentation in 83ms (20 modules)
+ ✓ Ready in 1489ms
+ ○ Compiling /client-work ...
+ ✓ Compiled /client-work in 720ms (689 modules)
+ GET /client-work 200 in 1175ms
+ ✓ Compiled in 48ms (241 modules)
+ ✓ Compiled /api/client-work in 161ms (465 modules)
+ ✓ Compiled in 68ms (242 modules)
+ GET /favicon.ico 200 in 648ms
+Error reading client work: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net'
+}
+ GET /api/client-work 500 in 637ms
+ ✓ Compiled / in 194ms (792 modules)
+Failed to read from MongoDB: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net'
+}
+Failed to read live stats: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net'
+}
+ GET / 200 in 297ms
+ ✓ Compiled /api/resumes in 138ms (794 modules)
+Error reading resumes: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net'
+}
+ GET /api/resumes 500 in 169ms
+Error reading resumes: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net'
+}
+ GET /api/resumes 500 in 11ms
+ ✓ Compiled /blog in 270ms (831 modules)
+ ⨯ [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+ GET /blog 200 in 393ms
+Failed to read from MongoDB: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+Failed to read live stats: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+ GET / 200 in 243ms
+Error reading resumes: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+ GET /api/resumes 500 in 24ms
+ ✓ Compiled /admin in 248ms (852 modules)
+ GET /admin 200 in 594ms
+ ✓ Compiled /api/admin/auth in 471ms (859 modules)
+ POST /api/admin/auth 200 in 623ms
+ ✓ Compiled /admin/dashboard in 365ms (898 modules)
+ GET /admin/dashboard 200 in 538ms
+ GET /api/admin/auth 200 in 24ms
+ GET /api/admin/auth 200 in 11ms
+ ✓ Compiled /api/admin/blogs in 430ms (903 modules)
+Error reading blogs: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+ GET /api/admin/blogs 500 in 477ms
+Error reading portfolio data: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+ GET /api/admin/portfolio 500 in 484ms
+Error reading blogs: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+ GET /api/admin/blogs 500 in 11ms
+Error reading portfolio data: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+ GET /api/admin/portfolio 500 in 14ms
+ ○ Compiling /admin/dashboard/blog ...
+ ✓ Compiled /admin/dashboard/blog in 674ms (968 modules)
+ GET /admin/dashboard/blog 200 in 776ms
+Error reading blogs: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+ GET /api/admin/blogs 500 in 53ms
+ ✓ Compiled /api/admin/blogs/tags in 445ms (970 modules)
+Error reading blogs: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+ GET /api/admin/blogs 500 in 479ms
+Error fetching blog tags: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+ GET /api/admin/blogs/tags 500 in 536ms
+Error fetching blog tags: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+ GET /api/admin/blogs/tags 500 in 8ms
+Error creating blog: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+ POST /api/admin/blogs 500 in 29ms
+Error creating blog: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+ POST /api/admin/blogs 500 in 14ms
+ GET /admin/dashboard/blog 200 in 349ms
+ GET /favicon.ico 200 in 30ms
+ GET /api/admin/auth 200 in 39ms
+Error reading blogs: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+ GET /api/admin/blogs 500 in 32ms
+Error fetching blog tags: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+ GET /api/admin/blogs/tags 500 in 40ms
+Error reading blogs: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+ GET /api/admin/blogs 500 in 17ms
+Error fetching blog tags: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+ GET /api/admin/blogs/tags 500 in 16ms
+ ○ Compiling /admin/dashboard/client-work ...
+ ✓ Compiled /admin/dashboard/client-work in 567ms (975 modules)
+ GET /admin/dashboard/client-work 200 in 683ms
+ ○ Compiling /api/admin/client-work ...
+ ✓ Compiled /api/admin/client-work in 838ms (1225 modules)
+Error reading client work: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+ GET /api/admin/client-work 500 in 960ms
+ GET /admin/dashboard/blog 200 in 914ms
+Error reading client work: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+ GET /api/admin/client-work 500 in 9ms
+Error reading blogs: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+ GET /api/admin/blogs 500 in 20ms
+Error fetching blog tags: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+ GET /api/admin/blogs/tags 500 in 27ms
+Error reading blogs: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+ GET /api/admin/blogs 500 in 20ms
+Error fetching blog tags: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+ GET /api/admin/blogs/tags 500 in 17ms
+ ✓ Compiled /admin/dashboard/education in 404ms (1234 modules)
+ GET /admin/dashboard/education 200 in 521ms
+Error reading portfolio data: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+ GET /api/admin/portfolio 500 in 23ms
+Error reading portfolio data: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+ GET /api/admin/portfolio 500 in 7ms
+ GET /admin/dashboard/blog 200 in 89ms
+Error reading blogs: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+ GET /api/admin/blogs 500 in 30ms
+Error fetching blog tags: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+ GET /api/admin/blogs/tags 500 in 49ms
+Error reading blogs: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+ GET /api/admin/blogs 500 in 24ms
+Error fetching blog tags: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+ GET /api/admin/blogs/tags 500 in 18ms
+ GET /admin/dashboard/blog 200 in 237ms
+ GET /favicon.ico 200 in 65ms
+ GET /api/admin/auth 200 in 118ms
+Error reading blogs: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+ GET /api/admin/blogs 500 in 54ms
+Error fetching blog tags: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+ GET /api/admin/blogs/tags 500 in 62ms
+Error reading blogs: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+ GET /api/admin/blogs 500 in 40ms
+Error fetching blog tags: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+ GET /api/admin/blogs/tags 500 in 42ms
+ GET /admin/dashboard/education 200 in 72ms
+Error reading portfolio data: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+ GET /api/admin/portfolio 500 in 21ms
+Error reading portfolio data: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+ GET /api/admin/portfolio 500 in 15ms
+ GET /admin/dashboard/blog 200 in 32ms
+Error reading blogs: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+ GET /api/admin/blogs 500 in 10ms
+Error fetching blog tags: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+ GET /api/admin/blogs/tags 500 in 16ms
+Error reading blogs: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+ GET /api/admin/blogs 500 in 14ms
+Error fetching blog tags: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+ GET /api/admin/blogs/tags 500 in 15ms
+ GET /admin/dashboard/blog 200 in 31ms
+ GET /admin/dashboard/education 200 in 36ms
+Error reading portfolio data: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+ GET /api/admin/portfolio 500 in 9ms
+Error reading portfolio data: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+ GET /api/admin/portfolio 500 in 7ms
+Failed to read from MongoDB: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+Failed to read live stats: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+ GET / 200 in 210ms
+Error reading resumes: [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+ GET /api/resumes 500 in 21ms
+ ⨯ [Error: querySrv ECONNREFUSED _mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net] {
+  errno: undefined,
+  code: 'ECONNREFUSED',
+  syscall: 'querySrv',
+  hostname: '_mongodb._tcp.nahrafportfolio.3ndcpra.mongodb.net',
+  digest: '556220231'
+}
+ GET /blog 200 in 49ms
+[Browserslist] Could not parse /Users/farhan/package.json. Ignoring it.
+ReferenceError: require is not defined
+    at /Users/farhan/Desktop/Github-Portfolio/tailwind.config.ts:62:12
+    at ModuleJobSync.runSync (node:internal/modules/esm/module_job:534:37)
+    at ModuleLoader.importSyncForRequire (node:internal/modules/esm/loader:366:47)
+    at loadESMFromCJS (node:internal/modules/cjs/loader:1648:24)
+    at Module._compile (node:internal/modules/cjs/loader:1811:5)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1969:10)
+    at Module.load (node:internal/modules/cjs/loader:1552:32)
+    at Module._load (node:internal/modules/cjs/loader:1354:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.require (node:internal/modules/cjs/loader:1575:12)
+    at mod.require (/Users/farhan/Desktop/Github-Portfolio/node_modules/next/dist/server/require-hook.js:68:28)
+    at require (node:internal/modules/helpers:191:16)
+    at /Users/farhan/Desktop/Github-Portfolio/node_modules/tailwindcss/lib/lib/load-config.js:51:20
+    at loadConfig (/Users/farhan/Desktop/Github-Portfolio/node_modules/tailwindcss/lib/lib/load-config.js:55:6)
+    at getTailwindConfig (/Users/farhan/Desktop/Github-Portfolio/node_modules/tailwindcss/lib/lib/setupTrackingContext.js:74:116)
+    at /Users/farhan/Desktop/Github-Portfolio/node_modules/tailwindcss/lib/lib/setupTrackingContext.js:103:92
+    at /Users/farhan/Desktop/Github-Portfolio/node_modules/tailwindcss/lib/processTailwindFeatures.js:46:11
+    at plugins (/Users/farhan/Desktop/Github-Portfolio/node_modules/tailwindcss/lib/plugin.js:38:69)
+    at LazyResult.runOnRoot (/Users/farhan/Desktop/Github-Portfolio/node_modules/next/node_modules/postcss/lib/lazy-result.js:329:16)
+    at LazyResult.runAsync (/Users/farhan/Desktop/Github-Portfolio/node_modules/next/node_modules/postcss/lib/lazy-result.js:258:26)
+    at LazyResult.async (/Users/farhan/Desktop/Github-Portfolio/node_modules/next/node_modules/postcss/lib/lazy-result.js:160:30)
+    at LazyResult.then (/Users/farhan/Desktop/Github-Portfolio/node_modules/next/node_modules/postcss/lib/lazy-result.js:404:17)
+    at async Span.traceAsyncFn (/Users/farhan/Desktop/Github-Portfolio/node_modules/next/dist/trace/trace.js:157:20)
+    at async /Users/farhan/Desktop/Github-Portfolio/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js:55:22
+    at async Span.traceAsyncFn (/Users/farhan/Desktop/Github-Portfolio/node_modules/next/dist/trace/trace.js:157:20)
+[?25h
