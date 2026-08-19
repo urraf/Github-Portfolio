@@ -73,10 +73,27 @@ export default function BlogListClient({ blogs }: { blogs: BlogMeta[] }) {
     )
     return result
   }, [blogs, searchQuery, selectedTag])
+  const [featuredIndex, setFeaturedIndex] = useState(0)
 
-  const featured = useMemo(() => filteredBlogs[0], [filteredBlogs])
+  // Cycle through top 4 posts every 8 seconds
+  useEffect(() => {
+    if (filteredBlogs.length <= 1 || searchQuery || selectedTag) return;
+    const interval = setInterval(() => {
+      setFeaturedIndex(prev => (prev + 1) % Math.min(4, filteredBlogs.length))
+    }, 8000)
+    return () => clearInterval(interval)
+  }, [filteredBlogs.length, searchQuery, selectedTag])
+
+  const featuredPool = useMemo(() => filteredBlogs.slice(0, 4), [filteredBlogs])
+  const featured = useMemo(() => featuredPool[featuredIndex] || filteredBlogs[0], [featuredPool, featuredIndex, filteredBlogs])
+  
   const trending = useMemo(() => [...blogs].sort((a, b) => (b.likes || 0) - (a.likes || 0)).slice(0, 5), [blogs])
-  const editorPicks = useMemo(() => filteredBlogs.slice(1, 4), [filteredBlogs])
+  
+  const editorPicks = useMemo(() => {
+    if (searchQuery || selectedTag) return filteredBlogs.slice(1, 4);
+    return featuredPool.filter((_, idx) => idx !== featuredIndex)
+  }, [featuredPool, featuredIndex, searchQuery, selectedTag, filteredBlogs])
+  
   const latestPosts = useMemo(() => (searchQuery || selectedTag) ? filteredBlogs : filteredBlogs.slice(4), [filteredBlogs, searchQuery, selectedTag])
   const allTags = useMemo(() => {
     const tagCount: Record<string, number> = {}
