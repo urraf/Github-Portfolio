@@ -10,12 +10,14 @@
     "seed": "tsx scripts/seed.ts"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^0.0.14",
     "@radix-ui/react-avatar": "^1.1.10",
     "@radix-ui/react-slot": "^1.2.3",
     "@tailwindcss/postcss": "^4.1.11",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "ai": "^3.4.33",
     "autoprefixer": "^10.4.21",
     "class-variance-authority": "^0.7.1",
     "cloudinary": "^2.10.0",

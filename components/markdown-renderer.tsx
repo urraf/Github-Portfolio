@@ -189,6 +189,25 @@ export default function MarkdownRenderer({ content, className = "", isEditable =
       '<a href="$2" class="text-[#00d4ff] hover:text-[#38bdf8] underline decoration-[#00d4ff]/30 hover:decoration-[#00d4ff] transition-colors" target="_blank" rel="noopener noreferrer">$1</a>'
     )
 
+    // Tables
+    html = html.replace(
+      /^\|(.+)\|\s*\n\|([- :|]+)\|\s*\n((?:\|.*\|\s*\n?)*)/gm,
+      (match, headerRow, separatorRow, bodyRows) => {
+        const parseCells = (rowStr: string) => rowStr.split('|').slice(1, -1).map(c => c.trim());
+        const headers = parseCells(`|${headerRow}|`);
+        const body = bodyRows.trim().split('\n').filter((r: string) => r.trim().startsWith('|'));
+        
+        const headerHtml = `<tr>${headers.map(cell => `<th class="px-4 py-3 text-left font-semibold text-white border-b-2 border-[#1e293b] bg-[#0c1120]/80 whitespace-nowrap">${cell}</th>`).join('')}</tr>`;
+        
+        const bodyHtml = body.map((row: string) => {
+          const cells = parseCells(row);
+          return `<tr class="hover:bg-[#1e293b]/30 transition-colors">${cells.map(cell => `<td class="px-4 py-3 border-b border-[#1e293b] text-[#cbd5e1] align-top">${cell}</td>`).join('')}</tr>`;
+        }).join('');
+        
+        return `<div class="overflow-x-auto my-6 border border-[#1e293b] rounded-xl shadow-sm"><table class="w-full text-sm text-left border-collapse"><thead>${headerHtml}</thead><tbody class="divide-y divide-[#1e293b] bg-[#0b1121]/50">${bodyHtml}</tbody></table></div>\n`;
+      }
+    )
+
     // Horizontal rules
     html = html.replace(/^---$/gm, '<hr class="border-[#1a2235] my-8" />')
 

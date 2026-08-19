@@ -11,6 +11,7 @@ import BlogComments from "@/components/blog-comments"
 import BlogLikeButton from "@/components/blog-like-button"
 import BlogViewTracker from "@/components/blog-view-tracker"
 import TableOfContents from "@/components/table-of-contents"
+import BlogAIChat from "@/components/blog-ai-chat"
 import { getDb } from '@/lib/mongodb'
 
 interface Blog {
@@ -204,6 +205,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
 
       <AnimatedBackground />
+      <BlogAIChat blogContext={{ title: blog.title, tags: blog.tags, content: blog.content }} />
 
       {/* ===== HEADER ===== */}
       <header className="border-b border-[#1a2235] bg-[#060a13]/95 backdrop-blur-xl px-4 py-3.5 sticky top-0 z-50">
