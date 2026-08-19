@@ -11,7 +11,7 @@ import {
   Link2, Code, Quote, Minus, Image, Upload, ExternalLink, Search,
   ArrowUpDown, Copy, Lock, Unlock, Heart, Clock, FileText, BarChart3,
   ChevronDown, CheckSquare, Square, AlertTriangle, Globe, Tag, Hash,
-  Folder
+  Folder, Wand2
 } from "lucide-react"
 import MarkdownRenderer from "@/components/markdown-renderer"
 
@@ -85,6 +85,11 @@ export default function BlogManagerPage() {
   const [bulkActioning, setBulkActioning] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 10
+
+  // ── AI Generator State ─────────────────────────────────────────────
+  const [showAiModal, setShowAiModal] = useState(false)
+  const [aiTopic, setAiTopic] = useState("")
+  const [isGenerating, setIsGenerating] = useState(false)
 
   // ── Editor State ───────────────────────────────────────────────────
   const [editing, setEditing] = useState<Blog | null>(null)
@@ -223,6 +228,46 @@ export default function BlogManagerPage() {
       setPreview(false)
     }
     setHasUnsavedChanges(false)
+  }
+
+  // ── AI Generation ──────────────────────────────────────────────────
+  const generateAiBlog = async () => {
+    if (!aiTopic) return
+    setIsGenerating(true)
+    try {
+      const res = await fetch("/api/admin/blogs/ai-generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ topic: aiTopic })
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setEditing(prev => {
+          if (!prev) return prev
+          return {
+            ...prev,
+            title: data.title || prev.title,
+            excerpt: data.excerpt || prev.excerpt,
+            content: data.content || prev.content,
+            category: data.category || prev.category,
+            tags: data.tags?.length ? data.tags : prev.tags,
+            metaTitle: data.metaTitle || prev.metaTitle,
+            metaDescription: data.metaDescription || prev.metaDescription,
+          }
+        })
+        setShowAiModal(false)
+        setAiTopic("")
+        setHasUnsavedChanges(true)
+      } else {
+        const err = await res.json()
+        alert(`Failed to generate: ${err.error}`)
+      }
+    } catch (e) {
+      console.error(e)
+      alert("Error generating blog")
+    } finally {
+      setIsGenerating(false)
+    }
   }
 
   // ── CRUD Operations ────────────────────────────────────────────────
@@ -488,7 +533,15 @@ export default function BlogManagerPage() {
             <Button type="button" onClick={closeEditor} variant="ghost" className="text-[#7d8590] hover:text-white hover:bg-[#21262d]">
               <X className="h-4 w-4 mr-1" />Back
             </Button>
-            <h1 className="text-xl font-bold text-white">Edit Blog Post</h1>
+            <div className="h-6 w-[1px] bg-[#30363d] hidden sm:block" />
+            <Button 
+              onClick={() => setShowAiModal(true)}
+              className="bg-gradient-to-r from-[#8b5cf6] to-[#3b82f6] hover:from-[#7c3aed] hover:to-[#2563eb] text-white border-0 h-9 px-4 text-xs font-bold tracking-wider shadow-[0_0_15px_rgba(139,92,246,0.3)] transition-all"
+            >
+              <Wand2 className="h-3.5 w-3.5 mr-2" />
+              NEXUS AI GENERATE
+            </Button>
+            <h1 className="text-xl font-bold text-white ml-2 hidden lg:block">Edit Blog Post</h1>
             {hasUnsavedChanges && (
               <span className="text-xs text-[#d29922] flex items-center gap-1">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#d29922] animate-pulse" />
@@ -508,6 +561,44 @@ export default function BlogManagerPage() {
             </Button>
           </div>
         </div>
+
+        {/* ── AI Generator Modal/Inline Panel ─────────────────────────── */}
+        {showAiModal && (
+          <div className="mb-4 p-5 sm:p-6 bg-[#0d1117] border border-[#8b5cf6]/30 rounded-xl shadow-[0_0_30px_rgba(139,92,246,0.1)] relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#8b5cf6]/5 to-[#3b82f6]/5 pointer-events-none" />
+            <div className="relative z-10 flex flex-col gap-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-[#a78bfa]">
+                  <Wand2 className="h-5 w-5" />
+                  <h3 className="font-bold tracking-widest text-sm">NEXUS AI_WRITER</h3>
+                </div>
+                <button onClick={() => setShowAiModal(false)} className="text-[#7d8590] hover:text-white transition-colors">
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <p className="text-xs text-[#7d8590] font-mono">Enter a topic and the AI will generate a complete, formatted technical blog draft for you.</p>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Input 
+                  placeholder="e.g., 'The future of React Server Components'"
+                  value={aiTopic}
+                  onChange={(e) => setAiTopic(e.target.value)}
+                  className="flex-1 bg-[#010409]/50 border-[#3b82f6]/30 focus-visible:ring-[#8b5cf6]/50 font-mono text-sm text-[#e6edf3]"
+                  disabled={isGenerating}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') generateAiBlog()
+                  }}
+                />
+                <Button 
+                  onClick={generateAiBlog}
+                  disabled={!aiTopic || isGenerating}
+                  className="bg-[#8b5cf6] hover:bg-[#7c3aed] text-white w-full sm:w-40 font-bold tracking-wider"
+                >
+                  {isGenerating ? "GENERATING..." : "GENERATE"}
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {/* ── Main Content Area ─────────────────────────────────── */}
