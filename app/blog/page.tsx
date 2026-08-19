@@ -23,7 +23,7 @@ export const revalidate = 60
 
 interface BlogDoc {
   _id: any; title: string; slug: string; content: string; excerpt: string
-  tags: string[]; publishedAt: string; published: boolean; imageUrl?: string; likes?: number
+  tags: string[]; publishedAt: string; published: boolean; imageUrl?: string; likes?: number; views?: number
 }
 
 export default async function BlogListPage() {
@@ -38,6 +38,7 @@ export default async function BlogListPage() {
     ...rest,
     id: _id.toString(),
     readTime: Math.max(1, Math.ceil((content || '').split(/\s+/).length / 200)),
+    views: rest.views || 0,
   }))
 
   return (

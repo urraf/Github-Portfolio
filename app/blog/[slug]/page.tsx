@@ -9,6 +9,7 @@ import AnimatedBackground from "@/components/animated-background"
 import MarkdownRenderer from "@/components/markdown-renderer"
 import BlogComments from "@/components/blog-comments"
 import BlogLikeButton from "@/components/blog-like-button"
+import BlogViewTracker from "@/components/blog-view-tracker"
 import TableOfContents from "@/components/table-of-contents"
 import { getDb } from '@/lib/mongodb'
 
@@ -24,6 +25,7 @@ interface Blog {
   published: boolean;
   imageUrl?: string;
   likes?: number;
+  views?: number;
 }
 
 // Tag color mapping
@@ -272,6 +274,8 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                 </span>
                 <span className="text-[#1a2235]">|</span>
                 <BlogLikeButton blogId={blog.id as string} initialLikes={blog.likes || 0} />
+                <span className="text-[#1a2235]">|</span>
+                <BlogViewTracker blogId={blog.id as string} initialViews={blog.views || 0} />
               </div>
             </header>
 

@@ -54,6 +54,7 @@ export async function POST(request: NextRequest) {
       tags: blogData.tags || [],
       imageUrl: blogData.imageUrl || '',
       likes: 0,
+      views: 0,
       publishedAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       published: blogData.published ?? false,

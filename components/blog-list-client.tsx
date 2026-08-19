@@ -7,7 +7,7 @@ import { BookOpen, ArrowLeft, Calendar, Clock, ArrowRight, Search, Heart, Trendi
 
 interface BlogMeta {
   id: string; title: string; slug: string; excerpt: string
-  tags: string[]; publishedAt: string; published: boolean; imageUrl?: string; likes?: number; readTime: number
+  tags: string[]; publishedAt: string; published: boolean; imageUrl?: string; likes?: number; views?: number; readTime: number
 }
 
 // Tag color mapping for consistent, vibrant tag colors
@@ -84,6 +84,7 @@ export default function BlogListClient({ blogs }: { blogs: BlogMeta[] }) {
     return Object.entries(tagCount).sort((a, b) => b[1] - a[1]).slice(0, 15)
   }, [blogs])
   const totalLikes = blogs.reduce((sum, b) => sum + (b.likes || 0), 0)
+  const totalViews = blogs.reduce((sum, b) => sum + (b.views || 0), 0)
 
   // ======= BLOG CARD =======
   const BlogCard = ({ blog, index = 0, size = "normal" }: { blog: BlogMeta; index?: number; size?: "normal" | "horizontal" }) => {
@@ -105,7 +106,7 @@ export default function BlogListClient({ blogs }: { blogs: BlogMeta[] }) {
             </div>
             <div className="flex-1 min-w-0">
               <h4 className="text-xs font-medium text-[#c9d1d9] group-hover:text-[#00d4ff] transition-colors line-clamp-1 leading-snug">{blog.title}</h4>
-              <span className="text-[10px] text-[#3d4a5c] mt-0.5 block">{blog.readTime} min · {blog.likes || 0} ♥</span>
+              <span className="text-[10px] text-[#3d4a5c] mt-0.5 block">{blog.readTime} min · {blog.views || 0} views · {blog.likes || 0} ♥</span>
             </div>
           </div>
         </Link>
@@ -143,7 +144,8 @@ export default function BlogListClient({ blogs }: { blogs: BlogMeta[] }) {
             <div className="flex items-center gap-3 mb-3 text-[11px] text-[#3d4a5c]">
               <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{new Date(blog.publishedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span>
               <span className="flex items-center gap-1"><Clock className="h-3 w-3" />{blog.readTime} min</span>
-              <span className="flex items-center gap-1 ml-auto"><Heart className="h-3 w-3" />{blog.likes || 0}</span>
+              <span className="flex items-center gap-1"><Heart className="h-3 w-3" />{blog.likes || 0}</span>
+              <span className="flex items-center gap-1"><Eye className="h-3 w-3" />{blog.views || 0}</span>
             </div>
             <h2 className="text-[15px] font-semibold text-[#e2e8f0] group-hover:text-[#00d4ff] transition-colors mb-2 leading-snug line-clamp-2">{blog.title}</h2>
             {blog.excerpt && <p className="text-[#4a5568] text-xs leading-relaxed line-clamp-2 flex-1 mb-4">{blog.excerpt}</p>}
@@ -355,6 +357,7 @@ export default function BlogListClient({ blogs }: { blogs: BlogMeta[] }) {
                         <span className="text-xs text-[#4a5568] flex items-center gap-1.5 font-mono"><Calendar className="h-3.5 w-3.5" />{new Date(featured.publishedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
                         <span className="text-xs text-[#4a5568] flex items-center gap-1.5 font-mono"><Clock className="h-3.5 w-3.5" />{featured.readTime} min</span>
                         <span className="text-xs text-[#4a5568] flex items-center gap-1.5 font-mono"><Heart className="h-3.5 w-3.5" />{featured.likes || 0}</span>
+                        <span className="text-xs text-[#4a5568] flex items-center gap-1.5 font-mono"><Eye className="h-3.5 w-3.5" />{featured.views || 0}</span>
                         <span className="ml-auto text-[#00d4ff] text-sm font-semibold group-hover:translate-x-2 transition-transform inline-flex items-center gap-2 hidden sm:flex font-mono">
                           read() <ArrowRight className="h-4 w-4" />
                         </span>
@@ -422,7 +425,7 @@ export default function BlogListClient({ blogs }: { blogs: BlogMeta[] }) {
                     <h3 className="text-[#e2e8f0] font-bold text-sm">Farhan</h3>
                     <p className="text-[#3d4a5c] text-[11px] mt-0.5 font-mono">Software Engineer</p>
                     <p className="text-[#4a5568] text-[11px] mt-2 leading-relaxed">Deep dives into distributed systems, backend engineering, and building at scale.</p>
-                    <div className="flex items-center justify-center gap-8 mt-4 pt-4 border-t border-[#1a2235]">
+                    <div className="flex items-center justify-center gap-6 mt-4 pt-4 border-t border-[#1a2235]">
                       <div className="text-center">
                         <p className="text-[#00d4ff] font-bold text-lg font-mono">{blogs.length}</p>
                         <p className="text-[#2a3650] text-[10px] font-mono">posts</p>
@@ -431,6 +434,11 @@ export default function BlogListClient({ blogs }: { blogs: BlogMeta[] }) {
                       <div className="text-center">
                         <p className="text-[#ff5288] font-bold text-lg font-mono">{totalLikes}</p>
                         <p className="text-[#2a3650] text-[10px] font-mono">likes</p>
+                      </div>
+                      <div className="w-px h-8 bg-[#1a2235]" />
+                      <div className="text-center">
+                        <p className="text-[#ff6b35] font-bold text-lg font-mono">{totalViews}</p>
+                        <p className="text-[#2a3650] text-[10px] font-mono">views</p>
                       </div>
                     </div>
                   </div>
