@@ -101,33 +101,12 @@ export default function BlogListClient({ blogs }: { blogs: BlogMeta[] }) {
       }
     }
   }
-  const [featuredIndex, setFeaturedIndex] = useState(0)
-
-  // Cycle through top 4 posts every 8 seconds
-  useEffect(() => {
-    if (filteredBlogs.length <= 1 || searchQuery || selectedTag) return;
-    const interval = setInterval(() => {
-      setFeaturedIndex(prev => (prev + 1) % Math.min(4, filteredBlogs.length))
-    }, 8000)
-    return () => clearInterval(interval)
-  }, [filteredBlogs.length, searchQuery, selectedTag])
-
-  const featuredPool = useMemo(() => filteredBlogs.slice(0, 4), [filteredBlogs])
-  const featured = useMemo(() => featuredPool[featuredIndex] || filteredBlogs[0], [featuredPool, featuredIndex, filteredBlogs])
+  // Find the most popular blog (highest likes) to feature at the top
+  const featured = useMemo(() => {
+    if (filteredBlogs.length === 0) return null;
+    return [...filteredBlogs].sort((a, b) => (b.likes || 0) - (a.likes || 0))[0];
+  }, [filteredBlogs])
   
-  const trending = useMemo(() => [...blogs].sort((a, b) => (b.likes || 0) - (a.likes || 0)).slice(0, 5), [blogs])
-  
-  const editorPicks = useMemo(() => {
-    if (searchQuery || selectedTag) return filteredBlogs.slice(1, 4);
-    return featuredPool.filter((_, idx) => idx !== featuredIndex)
-  }, [featuredPool, featuredIndex, searchQuery, selectedTag, filteredBlogs])
-  
-  const latestPosts = useMemo(() => (searchQuery || selectedTag) ? filteredBlogs : filteredBlogs.slice(4), [filteredBlogs, searchQuery, selectedTag])
-  const allTags = useMemo(() => {
-    const tagCount: Record<string, number> = {}
-    blogs.forEach(b => b.tags.forEach(t => { tagCount[t] = (tagCount[t] || 0) + 1 }))
-    return Object.entries(tagCount).sort((a, b) => b[1] - a[1]).slice(0, 15)
-  }, [blogs])
   const totalLikes = blogs.reduce((sum, b) => sum + (b.likes || 0), 0)
   const totalViews = blogs.reduce((sum, b) => sum + (b.views || 0), 0)
 
@@ -414,148 +393,11 @@ export default function BlogListClient({ blogs }: { blogs: BlogMeta[] }) {
               </section>
             )}
 
-            {/* ====== EDITOR'S PICKS ====== */}
-            {editorPicks.length > 0 && (
-              <section>
-                <div className="flex items-center gap-3 mb-8">
-                  <div className="flex items-center gap-2">
-                    <Sparkles className="h-4 w-4 text-[#ffd600]" />
-                    <h2 className="text-lg font-semibold text-[#e2e8f0] font-mono">
-                      <span className="text-[#ffd600]">*</span> editor_picks
-                    </h2>
-                  </div>
-                  <div className="flex-1 h-px bg-gradient-to-r from-[#1a2235] to-transparent" />
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {editorPicks.map((blog, i) => <BlogCard key={blog.id} blog={blog} index={i} />)}
-                </div>
-              </section>
-            )}
-
-            {/* ====== MAIN CONTENT + SIDEBAR ====== */}
-            <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-12">
-
-              {/* Left: Latest Articles */}
-              <div className="space-y-10">
-                <section>
-                  <div className="flex items-center gap-3 mb-8">
-                    <div className="flex items-center gap-2">
-                      <Zap className="h-4 w-4 text-[#00d4ff]" />
-                      <h2 className="text-lg font-semibold text-[#e2e8f0] font-mono">
-                        latest<span className="text-[#3d4a5c]">()</span>
-                      </h2>
-                      <span className="font-mono text-xs text-[#3d4a5c] bg-[#0c1120] px-2 py-0.5 rounded-md border border-[#1a2235]">{latestPosts.length}</span>
-                    </div>
-                    <div className="flex-1 h-px bg-gradient-to-r from-[#1a2235] to-transparent" />
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    {latestPosts.map((blog, i) => <BlogCard key={blog.id} blog={blog} index={i + 3} />)}
-                  </div>
-                </section>
-              </div>
-
-              {/* Right: Sidebar */}
-              <aside className="space-y-6 lg:sticky lg:top-20 lg:self-start">
-
-                {/* Author Card */}
-                <div className="bg-[#0c1120]/80 backdrop-blur-sm border border-[#1a2235] rounded-2xl overflow-hidden">
-                  <div className="h-16 relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#00d4ff]/20 via-[#a855f7]/20 to-[#00ff88]/20" />
-                    <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, #ffffff 1px, transparent 0)', backgroundSize: '16px 16px' }} />
-                  </div>
-                  <div className="px-5 pb-5 -mt-8 text-center">
-                    <Avatar className="h-14 w-14 mx-auto border-4 border-[#0c1120] shadow-xl mb-3 ring-2 ring-[#1a2235]">
-                      <AvatarImage src="/profile2.jpeg" alt="Author" className="object-cover" />
-                      <AvatarFallback className="bg-[#0f1729] text-white">F</AvatarFallback>
-                    </Avatar>
-                    <h3 className="text-[#e2e8f0] font-bold text-sm">Farhan</h3>
-                    <p className="text-[#3d4a5c] text-[11px] mt-0.5 font-mono">Software Engineer</p>
-                    <p className="text-[#4a5568] text-[11px] mt-2 leading-relaxed">Deep dives into distributed systems, backend engineering, and building at scale.</p>
-                    <div className="flex items-center justify-center gap-6 mt-4 pt-4 border-t border-[#1a2235]">
-                      <div className="text-center">
-                        <p className="text-[#00d4ff] font-bold text-lg font-mono">{blogs.length}</p>
-                        <p className="text-[#2a3650] text-[10px] font-mono">posts</p>
-                      </div>
-                      <div className="w-px h-8 bg-[#1a2235]" />
-                      <div className="text-center">
-                        <p className="text-[#ff5288] font-bold text-lg font-mono">{totalLikes}</p>
-                        <p className="text-[#2a3650] text-[10px] font-mono">likes</p>
-                      </div>
-                      <div className="w-px h-8 bg-[#1a2235]" />
-                      <div className="text-center">
-                        <p className="text-[#ff6b35] font-bold text-lg font-mono">{totalViews}</p>
-                        <p className="text-[#2a3650] text-[10px] font-mono">views</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Trending */}
-                <div className="bg-[#0c1120]/80 backdrop-blur-sm border border-[#1a2235] rounded-2xl p-5">
-                  <div className="flex items-center gap-2 mb-4">
-                    <TrendingUp className="h-4 w-4 text-[#00ff88]" />
-                    <h3 className="text-[#e2e8f0] font-semibold text-sm font-mono">trending<span className="text-[#3d4a5c]">()</span></h3>
-                  </div>
-                  <div className="space-y-0.5">
-                    {trending.map((blog, i) => (
-                      <Link key={blog.id} href={`/blog/${blog.slug}`} className="group flex items-start gap-3 p-2.5 rounded-xl hover:bg-[#0d1520] transition-colors">
-                        <span className="text-xl font-extrabold text-[#1a2235] group-hover:text-[#00ff88] transition-colors w-7 flex-shrink-0 leading-none mt-0.5 font-mono">
-                          {String(i + 1).padStart(2, '0')}
-                        </span>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="text-xs font-medium text-[#c9d1d9] group-hover:text-[#00d4ff] transition-colors line-clamp-2 leading-snug">{blog.title}</h4>
-                          <span className="text-[10px] text-[#2a3650] flex items-center gap-1 mt-1 font-mono">
-                            <Heart className="h-2.5 w-2.5" />{blog.likes || 0}
-                          </span>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Topics */}
-                <div className="bg-[#0c1120]/80 backdrop-blur-sm border border-[#1a2235] rounded-2xl p-5">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Hash className="h-4 w-4 text-[#a855f7]" />
-                    <h3 className="text-[#e2e8f0] font-semibold text-sm font-mono">topics</h3>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {allTags.map(([tag, count]) => {
-                      const color = getTagColor(tag)
-                      const isActive = selectedTag === tag
-                      return (
-                        <button
-                          key={tag}
-                          onClick={() => setSelectedTag(isActive ? null : tag)}
-                          className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[11px] font-mono border transition-all duration-300 cursor-pointer ${isActive ? 'scale-105' : 'hover:scale-105'}`}
-                          style={{
-                            backgroundColor: isActive ? color.bg : 'transparent',
-                            borderColor: isActive ? color.text + '50' : '#1a2235',
-                            color: isActive ? color.text : '#4a5568'
-                          }}
-                        >
-                          <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: color.dot }} />
-                          {tag}
-                          <span className="text-[9px] opacity-60">({count})</span>
-                        </button>
-                      )
-                    })}
-                  </div>
-                </div>
-
-                {/* Quick Reads */}
-                <div className="bg-[#0c1120]/80 backdrop-blur-sm border border-[#1a2235] rounded-2xl p-5">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Eye className="h-4 w-4 text-[#ff6b35]" />
-                    <h3 className="text-[#e2e8f0] font-semibold text-sm font-mono">quick_reads</h3>
-                  </div>
-                  <div className="space-y-0.5">
-                    {blogs.filter(b => b.readTime <= 5).slice(0, 4).map(blog => (
-                      <BlogCard key={blog.id} blog={blog} size="horizontal" />
-                    ))}
-                  </div>
-                </div>
-              </aside>
+            {/* ====== ALL OTHER POSTS (3-COLUMN GRID) ====== */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredBlogs.filter(b => b.id !== featured?.id).map((blog, i) => (
+                <BlogCard key={blog.id} blog={blog} index={i} />
+              ))}
             </div>
           </div>
         )}
