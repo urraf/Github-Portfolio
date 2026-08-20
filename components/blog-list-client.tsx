@@ -122,7 +122,7 @@ export default function BlogListClient({ blogs }: { blogs: BlogMeta[] }) {
     return featuredPool.filter((_, idx) => idx !== featuredIndex)
   }, [featuredPool, featuredIndex, searchQuery, selectedTag, filteredBlogs])
   
-  const latestPosts = useMemo(() => (searchQuery || selectedTag) ? filteredBlogs : filteredBlogs.slice(0, 10), [filteredBlogs, searchQuery, selectedTag])
+  const latestPosts = useMemo(() => (searchQuery || selectedTag) ? filteredBlogs : filteredBlogs.slice(4), [filteredBlogs, searchQuery, selectedTag])
   const allTags = useMemo(() => {
     const tagCount: Record<string, number> = {}
     blogs.forEach(b => b.tags.forEach(t => { tagCount[t] = (tagCount[t] || 0) + 1 }))
