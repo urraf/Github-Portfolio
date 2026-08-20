@@ -55,16 +55,20 @@ export async function PUT(
 
     // If it was just published, send notification
     if (updateData.published && !existing.published) {
-      // Don't await, send in background
-      notifyBlogPublished({
-        title: updateData.title,
-        slug: updateData.slug,
-        excerpt: updateData.excerpt,
-        category: updateData.category,
-        tags: updateData.tags,
-        imageUrl: updateData.imageUrl,
-        source: 'manual', // or ai-writer, but we use manual as blanket for editor
-      }).catch(console.error);
+      // Await to ensure Render doesn't throttle CPU before email sends
+      try {
+        await notifyBlogPublished({
+          title: updateData.title,
+          slug: updateData.slug,
+          excerpt: updateData.excerpt,
+          category: updateData.category,
+          tags: updateData.tags,
+          imageUrl: updateData.imageUrl,
+          source: 'manual', // or ai-writer, but we use manual as blanket for editor
+        });
+      } catch (err) {
+        console.error('[Email] Failed in update route:', err);
+      }
     }
 
     const updated = {

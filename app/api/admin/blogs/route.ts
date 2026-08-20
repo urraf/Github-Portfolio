@@ -67,16 +67,20 @@ export async function POST(request: NextRequest) {
     const result = await db.collection('blogs').insertOne(newBlog);
 
     if (newBlog.published) {
-      // Don't await, send in background
-      notifyBlogPublished({
-        title: newBlog.title,
-        slug: newBlog.slug,
-        excerpt: newBlog.excerpt,
-        category: newBlog.category,
-        tags: newBlog.tags,
-        imageUrl: newBlog.imageUrl,
-        source: 'manual',
-      }).catch(console.error);
+      // Await to ensure Render doesn't throttle CPU before email sends
+      try {
+        await notifyBlogPublished({
+          title: newBlog.title,
+          slug: newBlog.slug,
+          excerpt: newBlog.excerpt,
+          category: newBlog.category,
+          tags: newBlog.tags,
+          imageUrl: newBlog.imageUrl,
+          source: 'manual',
+        });
+      } catch (err) {
+        console.error('[Email] Failed in creation route:', err);
+      }
     }
 
     return NextResponse.json({ id: result.insertedId.toString(), ...newBlog }, { status: 201 });
