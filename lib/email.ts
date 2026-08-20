@@ -10,14 +10,6 @@
 
 import nodemailer from 'nodemailer';
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.SMTP_EMAIL,
-    pass: process.env.SMTP_PASSWORD,
-  },
-});
-
 interface BlogNotification {
   title: string;
   slug: string;
@@ -38,6 +30,14 @@ export async function notifyBlogPublished(blog: BlogNotification): Promise<void>
     console.warn('[Email] SMTP not configured, skipping notification');
     return;
   }
+
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.SMTP_EMAIL,
+      pass: process.env.SMTP_PASSWORD,
+    },
+  });
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://github-portfolio-kghg.onrender.com';
   const blogUrl = `${siteUrl}/blog/${blog.slug}`;
