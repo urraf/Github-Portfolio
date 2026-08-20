@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isAuthenticated } from '@/lib/auth';
 import { getDb } from '@/lib/mongodb';
+import { notifyBlogPublished } from '@/lib/email';
 
 // GET - returns blogs (published only for public, all for admin)
 export async function GET(request: NextRequest) {
@@ -64,6 +65,19 @@ export async function POST(request: NextRequest) {
     };
 
     const result = await db.collection('blogs').insertOne(newBlog);
+
+    if (newBlog.published) {
+      // Don't await, send in background
+      notifyBlogPublished({
+        title: newBlog.title,
+        slug: newBlog.slug,
+        excerpt: newBlog.excerpt,
+        category: newBlog.category,
+        tags: newBlog.tags,
+        imageUrl: newBlog.imageUrl,
+        source: 'manual',
+      }).catch(console.error);
+    }
 
     return NextResponse.json({ id: result.insertedId.toString(), ...newBlog }, { status: 201 });
   } catch (error) {

@@ -4,6 +4,7 @@ import { NextResponse, NextRequest } from 'next/server';
 import { getDb } from '@/lib/mongodb';
 import { getTrendingTopic, buildBlogPrompt } from '@/lib/blog-topics';
 import { searchCoverImage } from '@/lib/pexels';
+import { notifyBlogPublished } from '@/lib/email';
 
 const groq = createOpenAI({
   apiKey: process.env.GROK_API_KEY,
@@ -159,6 +160,17 @@ export async function POST(req: NextRequest) {
         });
 
         console.log(`[Cron Blog ${i + 1}] ✅ Generated: "${data.title}"`);
+
+        // Send email notification
+        await notifyBlogPublished({
+          title: data.title,
+          slug: finalSlug,
+          excerpt: data.excerpt || '',
+          category: data.category || 'General',
+          tags: data.tags || [],
+          imageUrl: coverImage.url,
+          source: 'cron-ai',
+        });
 
         // Longer delay between generations to respect Groq free tier rate limits (8000 TPM)
         if (i < count - 1) {

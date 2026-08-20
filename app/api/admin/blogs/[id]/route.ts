@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import { isAuthenticated } from '@/lib/auth';
 import { getDb } from '@/lib/mongodb';
+import { notifyBlogPublished } from '@/lib/email';
 
 // PUT - update a blog post
 export async function PUT(
@@ -51,6 +52,20 @@ export async function PUT(
     };
 
     await db.collection('blogs').updateOne(filter, { $set: updateData });
+
+    // If it was just published, send notification
+    if (updateData.published && !existing.published) {
+      // Don't await, send in background
+      notifyBlogPublished({
+        title: updateData.title,
+        slug: updateData.slug,
+        excerpt: updateData.excerpt,
+        category: updateData.category,
+        tags: updateData.tags,
+        imageUrl: updateData.imageUrl,
+        source: 'manual', // or ai-writer, but we use manual as blanket for editor
+      }).catch(console.error);
+    }
 
     const updated = {
       id,
