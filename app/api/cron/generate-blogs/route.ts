@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
         const result = await generateText({
           // @ts-ignore
           model: groq('openai/gpt-oss-120b'),
-          system: 'You are a JSON-only API. Output strictly valid JSON. Do not wrap the JSON in markdown code blocks. Keep content concise (800-1200 words max). Use only plain ASCII characters.',
+          system: 'You are a JSON-only API. Output strictly valid JSON. Keep content concise. Use only plain ASCII characters.',
           prompt,
           temperature: 0.8,
           maxTokens: 4096, // Limit output to prevent truncation

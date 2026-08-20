@@ -31,11 +31,13 @@ export async function POST(req: NextRequest) {
     const prompt = `You are an expert technical blog writer for a developer's personal portfolio.
 Write a comprehensive, engaging, and highly technical blog post about the following topic: "${topic}".
 
-Format your response AS A STRICT JSON OBJECT with exactly the following schema. Do NOT wrap it in markdown code blocks (no \`\`\`json), just output raw JSON:
+Format your response AS A STRICT JSON OBJECT with exactly the following schema. Do NOT wrap the final JSON response in markdown code blocks. Output raw JSON only.
+IMPORTANT: If you include code snippets in the "content" field, you MUST format them using standard triple-backtick markdown code blocks (e.g. \`\`\`javascript). Do not use single or double backticks for multiline code.
+
 {
   "title": "A catchy, SEO-friendly title",
   "excerpt": "A short, 2-sentence summary of the post",
-  "content": "The full blog post content formatted in Markdown. Include headings, code snippets (if applicable), and paragraphs.",
+  "content": "The full blog post content formatted in Markdown. Include headings, ``` code snippets (if applicable), and paragraphs.",
   "category": "One relevant technical category (e.g., 'Web Development', 'AI', 'Cloud', 'System Design')",
   "tags": ["tag1", "tag2", "tag3", "tag4"],
   "metaTitle": "SEO meta title (under 60 chars)",
@@ -45,7 +47,7 @@ Format your response AS A STRICT JSON OBJECT with exactly the following schema. 
     const result = await generateText({
       // @ts-ignore
       model: groq('openai/gpt-oss-120b'),
-      system: 'You are a JSON-only API. Output strictly valid JSON. Do not wrap the JSON in markdown code blocks. Keep content concise. Use only plain ASCII characters.',
+      system: 'You are a JSON-only API. Output strictly valid JSON. Keep content concise. Use only plain ASCII characters.',
       prompt: prompt,
       temperature: 0.7,
     });

@@ -161,11 +161,13 @@ CRITICAL RULES:
 - Escape all double quotes inside strings with backslash.
 - Your entire response must be valid, parseable JSON. Do NOT truncate.
 
-Format your response AS A STRICT JSON OBJECT. Do NOT wrap it in markdown code blocks. Output raw JSON only:
+Format your response AS A STRICT JSON OBJECT. Do NOT wrap the final JSON response in markdown code blocks. Output raw JSON only.
+IMPORTANT: If you include code snippets in the "content" field, you MUST format them using standard triple-backtick markdown code blocks (e.g. \`\`\`javascript). Do not use single or double backticks for multiline code.
+
 {
   "title": "A catchy, click-worthy title that would trend on Hacker News",
   "excerpt": "A compelling 2-sentence hook that makes developers NEED to read more",
-  "content": "The full blog post in Markdown. 800-1200 words MAX. Include ## headings, code blocks, bold text, and bullet points. Keep it focused and punchy.",
+  "content": "The full blog post in Markdown. 800-1200 words MAX. Include ## headings, ``` code blocks, bold text, and bullet points. Keep it focused and punchy.",
   "category": "One primary category (e.g., 'AI', 'Web Development', 'System Design', 'Cloud', 'Cybersecurity', 'Tech Industry', 'Programming', 'Data', 'Mobile', 'DevOps', 'Blockchain', 'Career')",
   "tags": ["tag1", "tag2", "tag3", "tag4", "tag5"],
   "imageQuery": "A 2-3 word search query for finding a relevant stock photo (e.g., 'neural network', 'server room', 'coding laptop', 'cloud computing')",
