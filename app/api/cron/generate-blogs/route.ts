@@ -66,17 +66,19 @@ export async function POST(req: NextRequest) {
         const result = await generateText({
           // @ts-ignore
           model: groq('openai/gpt-oss-120b'),
-          system: 'You are a JSON-only API. Output strictly valid JSON. No markdown code fences. Keep content concise (800-1200 words max). Use only plain ASCII characters.',
+          system: 'You are a JSON-only API. Output strictly valid JSON. Do not wrap the JSON in markdown code blocks. Keep content concise (800-1200 words max). Use only plain ASCII characters.',
           prompt,
           temperature: 0.8,
           maxTokens: 4096, // Limit output to prevent truncation
         });
 
         // 3. Parse the response (with repair for minor truncation)
-        let jsonText = result.text
-          .replace(/```json/gi, '')
-          .replace(/```/gi, '')
-          .trim();
+        // Strip markdown JSON wrappers only at the start and end, preserving inner code blocks
+        let jsonText = result.text.trim();
+        if (jsonText.startsWith('```json')) jsonText = jsonText.slice(7);
+        if (jsonText.startsWith('```')) jsonText = jsonText.slice(3);
+        if (jsonText.endsWith('```')) jsonText = jsonText.slice(0, -3);
+        jsonText = jsonText.trim();
 
         let data;
         try {

@@ -45,12 +45,12 @@ Format your response AS A STRICT JSON OBJECT with exactly the following schema. 
     const result = await generateText({
       // @ts-ignore
       model: groq('openai/gpt-oss-120b'),
-      system: 'You are a JSON-only API. Output strictly valid JSON.',
+      system: 'You are a JSON-only API. Output strictly valid JSON. Do not wrap the JSON in markdown code blocks. Keep content concise. Use only plain ASCII characters.',
       prompt: prompt,
       temperature: 0.7,
     });
 
-    const jsonText = result.text.replace(/```json/gi, '').replace(/```/gi, '').trim();
+    const jsonText = result.text.replace(/^```json\s*/i, '').replace(/```\s*$/i, '').trim();
     const data = JSON.parse(jsonText);
 
     return NextResponse.json(data);
