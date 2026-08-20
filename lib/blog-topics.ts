@@ -168,6 +168,7 @@ Format your response AS A STRICT JSON OBJECT. Do NOT wrap it in markdown code bl
   "content": "The full blog post in Markdown. 800-1200 words MAX. Include ## headings, code blocks, bold text, and bullet points. Keep it focused and punchy.",
   "category": "One primary category (e.g., 'AI', 'Web Development', 'System Design', 'Cloud', 'Cybersecurity', 'Tech Industry', 'Programming', 'Data', 'Mobile', 'DevOps', 'Blockchain', 'Career')",
   "tags": ["tag1", "tag2", "tag3", "tag4", "tag5"],
+  "imageQuery": "A 2-3 word search query for finding a relevant stock photo (e.g., 'neural network', 'server room', 'coding laptop', 'cloud computing')",
   "metaTitle": "SEO-optimized title (under 60 chars)",
   "metaDescription": "SEO meta description (under 160 chars)"
 }`;

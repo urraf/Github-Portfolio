@@ -3,7 +3,7 @@ import { generateText } from 'ai';
 import { NextResponse, NextRequest } from 'next/server';
 import { getDb } from '@/lib/mongodb';
 import { getTrendingTopic, buildBlogPrompt } from '@/lib/blog-topics';
-import { getCoverImage } from '@/lib/blog-images';
+import { searchCoverImage } from '@/lib/pexels';
 
 const groq = createOpenAI({
   apiKey: process.env.GROK_API_KEY,
@@ -117,7 +117,7 @@ export async function POST(req: NextRequest) {
         }
 
         // 4. Get a matching cover image
-        const coverImage = getCoverImage(data.category || '', data.tags || []);
+        const coverImage = await searchCoverImage(data.imageQuery || '', data.category || '', data.tags || []);
 
         // 5. Generate slug
         const baseSlug = (data.title as string)
