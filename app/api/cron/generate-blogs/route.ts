@@ -51,9 +51,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'GROK_API_KEY not configured' }, { status: 500 });
     }
 
-    const db = await getDb();
-    const generatedBlogs: Array<{ title: string; slug: string; category: string }> = [];
-    const generationErrors: any[] = [];
+    // Run the generation asynchronously in the background so we can return immediately
+    // This prevents cron-job.org from timing out after 30 seconds
+    const runGeneration = async () => {
+      try {
+        const db = await getDb();
+        const generatedBlogs: Array<{ title: string; slug: string; category: string }> = [];
+        const generationErrors: any[] = [];
 
     // ── Generate blogs ────────────────────────────────────────────────
     for (let i = 0; i < count; i++) {
@@ -185,24 +189,29 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // ── Response ──────────────────────────────────────────────────────
-    if (generatedBlogs.length === 0) {
-      return NextResponse.json(
-        { error: 'Failed to generate any blog posts', attempted: count, details: generationErrors },
-        { status: 500 }
-      );
-    }
+        if (generatedBlogs.length === 0) {
+          console.error('[Cron] Failed to generate any blogs:', generationErrors);
+        } else {
+          console.log(`[Cron] Successfully finished background generation of ${generatedBlogs.length} blogs.`);
+        }
+      } catch (fatalErr) {
+        console.error('[Cron] Fatal background error:', fatalErr);
+      }
+    };
 
+    // Fire and forget!
+    runGeneration();
+
+    // Immediately return success so cron-job.org doesn't timeout
     return NextResponse.json({
       success: true,
-      generated: generatedBlogs.length,
+      message: 'Background generation started',
       requested: count,
-      blogs: generatedBlogs,
       timestamp: new Date().toISOString(),
-    });
+    }, { status: 202 });
 
   } catch (error) {
-    console.error('[Cron] Fatal error:', error);
+    console.error('[Cron] Request error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
