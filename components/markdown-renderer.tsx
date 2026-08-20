@@ -1,6 +1,8 @@
 "use client"
 
 import React, { useEffect, useRef } from "react"
+import hljs from 'highlight.js'
+import 'highlight.js/styles/vs2015.css'
 
 interface MarkdownRendererProps {
   content: string
@@ -117,10 +119,21 @@ export default function MarkdownRenderer({ content, className = "", isEditable =
     const codeBlocks: string[] = []
     html = html.replace(/```(\w+)?\n([\s\S]*?)```/g, (_, lang, code) => {
       const idx = codeBlocks.length
-      const escaped = code.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      
+      let highlighted = '';
+      if (lang && hljs.getLanguage(lang)) {
+        try {
+          highlighted = hljs.highlight(code, { language: lang }).value;
+        } catch (e) {
+          highlighted = hljs.highlightAuto(code).value;
+        }
+      } else {
+        highlighted = hljs.highlightAuto(code).value;
+      }
+      
       const encodedCode = encodeURIComponent(code)
       codeBlocks.push(
-        `<div class="relative group my-6"><pre class="bg-[#070b14] border border-[#1a2235] rounded-xl p-5 overflow-x-auto"><div class="flex items-center gap-2 mb-3 text-[#484f58] text-xs font-mono">${lang ? `<span class="bg-[#0c1120] px-2 py-0.5 rounded text-[#4a5568]">${lang}</span>` : ''}</div><code class="text-[#e2e8f0] text-sm font-mono leading-relaxed">${escaped}</code></pre><button class="copy-code-btn absolute top-3 right-3 bg-[#1e293b]/50 hover:bg-[#1e293b] text-[#8892a4] hover:text-[#00d4ff] p-1.5 rounded-md opacity-0 group-hover:opacity-100 transition-all backdrop-blur-sm border border-transparent hover:border-[#2a3a55]" data-code="${encodedCode}" title="Copy code"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="copy-icon"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="check-icon hidden"><polyline points="20 6 9 17 4 12"/></svg></button></div>`
+        `<div class="relative group my-6"><pre class="hljs bg-[#1e1e1e] border border-[#333333] rounded-xl p-5 overflow-x-auto"><div class="flex items-center gap-2 mb-3 text-[#858585] text-xs font-mono">${lang ? `<span class="bg-[#2d2d2d] px-2 py-0.5 rounded text-[#d4d4d4]">${lang}</span>` : ''}</div><code class="text-sm font-mono leading-relaxed" style="background: transparent;">${highlighted}</code></pre><button class="copy-code-btn absolute top-3 right-3 bg-[#2d2d2d]/80 hover:bg-[#3d3d3d] text-[#d4d4d4] hover:text-white p-1.5 rounded-md opacity-0 group-hover:opacity-100 transition-all backdrop-blur-sm border border-transparent hover:border-[#4d4d4d]" data-code="${encodedCode}" title="Copy code"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="copy-icon"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="check-icon hidden"><polyline points="20 6 9 17 4 12"/></svg></button></div>`
       )
       return `%%CODEBLOCK_${idx}%%`
     })
