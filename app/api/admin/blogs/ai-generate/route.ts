@@ -37,7 +37,7 @@ IMPORTANT: If you include code snippets in the "content" field, you MUST format 
 {
   "title": "A catchy, SEO-friendly title",
   "excerpt": "A short, 2-sentence summary of the post",
-  "content": "The full blog post content formatted in Markdown. Include headings, ``` code snippets (if applicable), and paragraphs.",
+  "content": "The full blog post content formatted in Markdown. Include headings, \\\`\\\`\\\` code snippets (if applicable), and paragraphs.",
   "category": "One relevant technical category (e.g., 'Web Development', 'AI', 'Cloud', 'System Design')",
   "tags": ["tag1", "tag2", "tag3", "tag4"],
   "metaTitle": "SEO meta title (under 60 chars)",
