@@ -1,5 +1,6 @@
 "use client"
 import { useEffect, useState, useRef, useCallback } from "react"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -1173,7 +1174,7 @@ export default function BlogManagerPage() {
                   </button>
 
                   {/* Thumbnail */}
-                  <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 border border-[#30363d] bg-[#0d1117]">
+                  <Link href={`/blog/${blog.slug}`} target="_blank" className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 border border-[#30363d] bg-[#0d1117] block hover:opacity-80 transition-opacity">
                     {blog.imageUrl ? (
                       /* eslint-disable-next-line @next/next/no-img-element */
                       <img src={blog.imageUrl} alt={blog.title} className="w-full h-full object-cover" />
@@ -1182,12 +1183,14 @@ export default function BlogManagerPage() {
                         <BookOpen className="h-6 w-6" />
                       </div>
                     )}
-                  </div>
+                  </Link>
 
                   {/* Content */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
-                      <h3 className="text-white font-semibold truncate">{blog.title}</h3>
+                      <Link href={`/blog/${blog.slug}`} target="_blank" className="hover:underline text-white font-semibold truncate max-w-[300px] sm:max-w-md">
+                        {blog.title}
+                      </Link>
                       <Badge className={blog.published ? "bg-[#238636]/20 text-[#3fb950] border-[#238636]/30" : "bg-[#30363d] text-[#7d8590] border-[#484f58]"}>
                         {blog.published ? "Published" : "Draft"}
                       </Badge>
