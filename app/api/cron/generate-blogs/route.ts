@@ -53,6 +53,7 @@ export async function POST(req: NextRequest) {
 
     const db = await getDb();
     const generatedBlogs: Array<{ title: string; slug: string; category: string }> = [];
+    const generationErrors: any[] = [];
 
     // ── Generate blogs ────────────────────────────────────────────────
     for (let i = 0; i < count; i++) {
@@ -177,8 +178,9 @@ export async function POST(req: NextRequest) {
           console.log(`[Cron] Waiting 40s for rate limit reset before next generation...`);
           await new Promise(resolve => setTimeout(resolve, 40000));
         }
-      } catch (genError) {
+      } catch (genError: any) {
         console.error(`[Cron Blog ${i + 1}] Generation error:`, genError);
+        generationErrors.push({ attempt: i + 1, error: genError.message || genError.toString() });
         continue; // Skip this one, try the next
       }
     }
@@ -186,7 +188,7 @@ export async function POST(req: NextRequest) {
     // ── Response ──────────────────────────────────────────────────────
     if (generatedBlogs.length === 0) {
       return NextResponse.json(
-        { error: 'Failed to generate any blog posts', attempted: count },
+        { error: 'Failed to generate any blog posts', attempted: count, details: generationErrors },
         { status: 500 }
       );
     }
