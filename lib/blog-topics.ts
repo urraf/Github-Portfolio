@@ -143,31 +143,40 @@ TOPIC DIRECTION: "${topicHint}"
 
 YOUR MISSION:
 1. Pick a SPECIFIC, trending angle within this topic area — something developers are actively discussing RIGHT NOW
-2. Write a comprehensive, opinionated, and engaging blog post about it
+2. Write a comprehensive, opinionated, and engaging INFORMATIONAL blog post about it
 3. Make it feel like a HOT TAKE or deep analysis that would go viral on Twitter/X and Hacker News
-4. Include practical code examples where relevant
+4. Focus on insights, analysis, opinions, comparisons, trends, and real-world impact
 5. Be opinionated — developers love strong, well-argued opinions
 
-WRITING STYLE:
-- Conversational but technically deep
-- Use analogies and real-world examples
-- Include "hot take" opinions that spark discussion
-- Reference real tools, frameworks, and companies
-- Make it feel CURRENT — like it was written today about today's tech landscape
+CONTENT STYLE — THIS IS CRITICAL:
+- Write INFORMATIONAL and ANALYTICAL content. Think opinion pieces, trend analysis, industry commentary, comparisons, and deep dives.
+- Do NOT write code tutorials or code-heavy posts. Most blog posts should have ZERO code.
+- Only include a small code snippet if the topic absolutely requires it (e.g., showing a specific API change). Even then, keep it to 5-10 lines max.
+- Use bullet points, bold text, tables, numbered lists, and ## headings to structure the information clearly.
+- Use analogies, real-world examples, statistics, and comparisons to make your points.
+- Reference real tools, frameworks, companies, and people.
+- Make it feel CURRENT — like it was written today about today's tech landscape.
+
+FORMATTING RULES:
+- Use ## and ### headings to break up sections
+- Use **bold** for emphasis on key terms
+- Use bullet points and numbered lists for clarity
+- Use comparison tables where appropriate
+- Use > blockquotes for key insights or hot takes
 
 CRITICAL RULES:
 - The "content" field MUST be 800-1200 words maximum. Be concise and impactful.
-- Do NOT use special unicode characters like em-dashes (—) or smart quotes. Use plain ASCII only.
+- Do NOT use special unicode characters like em-dashes or smart quotes. Use plain ASCII only.
 - Escape all double quotes inside strings with backslash.
 - Your entire response must be valid, parseable JSON. Do NOT truncate.
+- Do NOT include code blocks unless the topic is specifically a coding tutorial. 95% of blogs should have NO code.
 
 Format your response AS A STRICT JSON OBJECT. Do NOT wrap the final JSON response in markdown code blocks. Output raw JSON only.
-IMPORTANT: If you include code snippets in the "content" field, you MUST format them using standard triple-backtick markdown code blocks (e.g. \`\`\`javascript). Do not use single or double backticks for multiline code.
 
 {
   "title": "A catchy, click-worthy title that would trend on Hacker News",
   "excerpt": "A compelling 2-sentence hook that makes developers NEED to read more",
-  "content": "The full blog post in Markdown. 800-1200 words MAX. Include ## headings, \\\`\\\`\\\` code blocks, bold text, and bullet points. Keep it focused and punchy.",
+  "content": "The full blog post in Markdown. 800-1200 words MAX. Include ## headings, bold text, bullet points, and tables. Focus on information and analysis, NOT code.",
   "category": "One primary category (e.g., 'AI', 'Web Development', 'System Design', 'Cloud', 'Cybersecurity', 'Tech Industry', 'Programming', 'Data', 'Mobile', 'DevOps', 'Blockchain', 'Career')",
   "tags": ["tag1", "tag2", "tag3", "tag4", "tag5"],
   "imageQuery": "A 2-3 word search query for finding a relevant stock photo (e.g., 'neural network', 'server room', 'coding laptop', 'cloud computing')",

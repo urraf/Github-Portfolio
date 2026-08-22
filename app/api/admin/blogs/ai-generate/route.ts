@@ -29,15 +29,20 @@ export async function POST(req: NextRequest) {
     }
 
     const prompt = `You are an expert technical blog writer for a developer's personal portfolio.
-Write a comprehensive, engaging, and highly technical blog post about the following topic: "${topic}".
+Write a comprehensive, engaging, and insightful blog post about the following topic: "${topic}".
 
-Format your response AS A STRICT JSON OBJECT with exactly the following schema. Do NOT wrap the final JSON response in markdown code blocks. Output raw JSON only.
-IMPORTANT: If you include code snippets in the "content" field, you MUST format them using standard triple-backtick markdown code blocks (e.g. \`\`\`javascript). Do not use single or double backticks for multiline code.
+CONTENT STYLE:
+- Write INFORMATIONAL and ANALYTICAL content: opinions, trend analysis, comparisons, deep dives.
+- Do NOT write code tutorials or code-heavy posts unless the topic specifically requires it.
+- Use ## headings, **bold**, bullet points, numbered lists, and tables to structure information clearly.
+- Only include a small code snippet if absolutely necessary (5-10 lines max).
+
+Format your response AS A STRICT JSON OBJECT. Do NOT wrap the final JSON response in markdown code blocks. Output raw JSON only.
 
 {
   "title": "A catchy, SEO-friendly title",
   "excerpt": "A short, 2-sentence summary of the post",
-  "content": "The full blog post content formatted in Markdown. Include headings, \\\`\\\`\\\` code snippets (if applicable), and paragraphs.",
+  "content": "The full blog post in Markdown. Include headings, bold text, bullet points, and tables. Focus on information and analysis, NOT code.",
   "category": "One relevant technical category (e.g., 'Web Development', 'AI', 'Cloud', 'System Design')",
   "tags": ["tag1", "tag2", "tag3", "tag4"],
   "metaTitle": "SEO meta title (under 60 chars)",
