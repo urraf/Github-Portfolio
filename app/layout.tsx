@@ -43,12 +43,14 @@ export const metadata: Metadata = {
     title: "Nahraf — Software Engineer, Full-Stack Developer & Tech Blogger",
     description:
       "Portfolio & tech blog — deep dives into software engineering, AI, system design, cloud architecture, and modern web development.",
+    images: [{ url: `${SITE_URL}/profile2.jpeg`, width: 1200, height: 630, alt: "Nahraf Portfolio" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Nahraf — Software Engineer & Tech Blogger",
     description:
       "Portfolio & tech blog — software engineering, AI, system design, and modern web development.",
+    images: [{ url: `${SITE_URL}/profile2.jpeg`, width: 1200, height: 630, alt: "Nahraf Portfolio" }],
   },
   robots: {
     index: true,
