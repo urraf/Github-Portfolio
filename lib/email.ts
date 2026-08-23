@@ -28,7 +28,7 @@ export async function notifyBlogPublished(blog: BlogNotificationData) {
     return;
   }
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://github-portfolio-kghg.onrender.com';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.nahraf.tech';
   const blogUrl = `${siteUrl}/blog/${blog.slug}`;
   const sourceLabel = blog.source === 'cron-ai' ? '🤖 Auto-Generated (Cron)' 
                     : blog.source === 'ai-writer' ? '🤖 AI Writer (Manual)' 

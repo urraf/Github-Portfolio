@@ -6,15 +6,15 @@ import BlogListClient from "@/components/blog-list-client"
 export const metadata: Metadata = {
   title: "Blog — Tech Articles on Engineering, AI & Development",
   description:
-    "Read Farhan's latest articles on software engineering, distributed systems, AI, full-stack development, and career growth. Deep dives into the tech that powers modern applications.",
+    "Read Nahraf's latest articles on software engineering, distributed systems, AI, full-stack development, and career growth. Deep dives into the tech that powers modern applications.",
   keywords: ["tech blog", "software engineering", "AI", "full-stack development", "distributed systems", "backend", "tutorials"],
   alternates: {
-    canonical: `${process.env.NEXT_PUBLIC_SITE_URL || "https://github-portfolio-kghg.onrender.com"}/blog`,
+    canonical: `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.nahraf.tech"}/blog`,
   },
   openGraph: {
-    title: "Farhan's Tech Blog",
+    title: "Nahraf's Tech Blog",
     description: "Deep dives into software engineering, AI, distributed systems, and building at scale.",
-    url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://github-portfolio-kghg.onrender.com"}/blog`,
+    url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.nahraf.tech"}/blog`,
     type: "website",
   },
 }
@@ -28,7 +28,43 @@ interface BlogDoc {
 
 export default async function BlogListPage() {
   const db = await getDb()
-  const rawBlogs = await db.collection('blogs')
+  const blogsCollection = db.collection('blogs')
+
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://nahraf.tech"
+  const collectionJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "Blog — Tech Articles on Engineering, AI & Development",
+    url: `${SITE_URL}/blog`,
+    description: "Read Nahraf's latest articles on software engineering, distributed systems, AI, full-stack development, and career growth.",
+    isPartOf: {
+      "@type": "WebSite",
+      name: "Nahraf — Software Engineer & Tech Blogger",
+      url: SITE_URL
+    }
+  }
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: SITE_URL
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Blog",
+        item: `${SITE_URL}/blog`
+      }
+    ]
+  }
+
+  // Fetch only published blogs
+  const rawBlogs = await blogsCollection
     .find({ published: true })
     .sort({ publishedAt: -1 })
     .toArray() as BlogDoc[]
@@ -42,7 +78,9 @@ export default async function BlogListPage() {
   }))
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0a0e17] text-[#e2e8f0] relative">
+    <div className="min-h-screen bg-[#0a0e17] selection:bg-[#00d4ff]/30 text-[#e2e8f0]">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       <AnimatedBackground />
       <BlogListClient blogs={blogs} />
     </div>

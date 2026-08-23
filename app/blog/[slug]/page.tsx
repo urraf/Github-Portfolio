@@ -88,7 +88,7 @@ const getBlogData = cache(async (slug: string) => {
   return { blog, recommendedBlogs }
 })
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://github-portfolio-kghg.onrender.com"
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.nahraf.tech"
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
@@ -162,7 +162,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   const blogUrl = `${SITE_URL}/blog/${blog.slug}`
 
   // JSON-LD Article structured data for Google rich results
-  const jsonLd = {
+  const articleJsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: blog.title,
@@ -172,12 +172,12 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
     dateModified: blog.publishedAt,
     author: {
       "@type": "Person",
-      name: "Farhan",
+      name: "Nahraf",
       url: SITE_URL,
     },
     publisher: {
       "@type": "Person",
-      name: "Farhan",
+      name: "Nahraf",
       url: SITE_URL,
     },
     mainEntityOfPage: {
@@ -196,16 +196,30 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
-      { "@type": "ListItem", position: 2, name: "Blog", item: `${SITE_URL}/blog` },
-      { "@type": "ListItem", position: 3, name: blog.title, item: blogUrl },
-    ],
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: SITE_URL
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Blog",
+        item: `${SITE_URL}/blog`
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: blog.title,
+        item: `${SITE_URL}/blog/${blog.slug}`
+      }
+    ]
   }
 
   return (
     <div className="min-h-screen bg-[#0a0e17] text-[#e2e8f0] relative">
-      {/* JSON-LD Structured Data */}
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
 
       <ScrollProgress />
