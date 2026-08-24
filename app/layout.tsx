@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: SITE_URL,
-    siteName: "Nahraf — Software Engineer & Tech Blogger",
+    siteName: "Nahraf",
     title: "Nahraf — Software Engineer, Full-Stack Developer & Tech Blogger",
     description:
       "Portfolio & tech blog — deep dives into software engineering, AI, system design, cloud architecture, and modern web development.",
@@ -78,7 +78,8 @@ export const metadata: Metadata = {
 const websiteJsonLd = {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  name: "Nahraf — Software Engineer & Tech Blogger",
+  name: "Nahraf",
+  alternateName: "Nahraf Portfolio",
   url: SITE_URL,
   description: "Portfolio & tech blog by Nahraf — software engineering, AI, system design, and modern web development.",
   author: {
