@@ -118,8 +118,8 @@ export default function Component({ data }: PortfolioProps) {
                   className="text-[#7d8590] hover:text-white transition-colors whitespace-nowrap">
                   Blog
                 </Link>
-                <Link href="/project-overview" className="text-[#7d8590] hover:text-white transition-colors whitespace-nowrap">
-                  Project Overview
+                <Link href="/open-source" className="text-[#7d8590] hover:text-white transition-colors whitespace-nowrap">
+                  Open Source
                 </Link>
                 <Link href="/client-work" className="text-[#7d8590] hover:text-white transition-colors whitespace-nowrap">
                   Client Work
@@ -187,8 +187,8 @@ export default function Component({ data }: PortfolioProps) {
                 <Link href="/blog" className="text-[#e6edf3] hover:text-white transition-colors py-1 w-full">
                   Blog
                 </Link>
-                <Link href="/project-overview" className="text-[#e6edf3] hover:text-white transition-colors py-1 w-full">
-                  Project Overview
+                <Link href="/open-source" className="text-[#e6edf3] hover:text-white transition-colors py-1 w-full">
+                  Open Source
                 </Link>
                 <Link href="/client-work" className="text-[#7d8590] hover:text-white transition-colors py-1 w-full">
                   Client Work
