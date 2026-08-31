@@ -25,8 +25,8 @@ const emptyEntry: Omit<Contribution, '_id' | 'createdAt'> = {
   contributionType: 'Pull Request', status: 'Merged', techStack: [], stars: 0
 }
 
-const contributionTypes = ['Pull Request', 'Bug Fix', 'Feature', 'Documentation', 'Issue']
-const statusOptions = ['Merged', 'Open', 'Closed']
+const contributionTypes = ['Pull Request', 'Package', 'Bug Fix', 'Feature', 'Documentation', 'Issue']
+const statusOptions = ['Published', 'Merged', 'Open', 'Closed']
 
 function getTypeIcon(type: string) {
   switch (type) {
