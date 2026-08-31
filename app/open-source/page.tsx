@@ -111,12 +111,6 @@ export default function OpenSourcePublicPage() {
       c.techStack.some(t => t.toLowerCase().includes(search.toLowerCase()))
     const matchesType = filterType === "All" || c.contributionType === filterType
     return matchesSearch && matchesType
-  }).sort((a, b) => {
-    // Force 'Package' type to always be at the very top
-    if (a.contributionType === 'Package' && b.contributionType !== 'Package') return -1;
-    if (a.contributionType !== 'Package' && b.contributionType === 'Package') return 1;
-    // Otherwise, sort by newest date first
-    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   })
 
   // Group contributions by year
