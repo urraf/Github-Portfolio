@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, ExternalLink, GitPullRequest, GitMerge, Bug, Star, BookOpen, FileText, Search, Filter, Activity } from "lucide-react"
+import { ArrowLeft, ExternalLink, GitPullRequest, GitMerge, Bug, Star, BookOpen, FileText, Search, Filter, Activity, Package } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { GitHubCalendar } from 'react-github-calendar'
 
@@ -23,6 +23,7 @@ interface Contribution {
 function getTypeIcon(type: string) {
   switch (type) {
     case 'Pull Request': return <GitPullRequest className="h-3.5 w-3.5" />
+    case 'Package': return <Package className="h-3.5 w-3.5" />
     case 'Bug Fix': return <Bug className="h-3.5 w-3.5" />
     case 'Feature': return <Star className="h-3.5 w-3.5" />
     case 'Documentation': return <BookOpen className="h-3.5 w-3.5" />
@@ -33,6 +34,12 @@ function getTypeIcon(type: string) {
 
 function getStatusStyles(status: string) {
   switch (status) {
+    case 'Published': return {
+      badge: 'bg-[#06b6d4]/15 text-[#22d3ee] border-[#06b6d4]/40', // Cyan color
+      glow: 'shadow-[0_0_20px_rgba(6,182,212,0.15)] hover:shadow-[0_0_30px_rgba(6,182,212,0.3)]',
+      icon: <Package className="h-3.5 w-3.5" />,
+      timelineDot: 'border-[#06b6d4] shadow-[0_0_10px_rgba(6,182,212,0.8)]'
+    }
     case 'Merged': return {
       badge: 'bg-[#238636]/15 text-[#3fb950] border-[#238636]/40',
       glow: 'shadow-[0_0_20px_rgba(46,160,67,0.15)] hover:shadow-[0_0_30px_rgba(46,160,67,0.3)]',
@@ -63,6 +70,7 @@ function getStatusStyles(status: string) {
 function getTypeColor(type: string) {
   switch (type) {
     case 'Pull Request': return 'bg-[#8b5cf6]/15 text-[#a78bfa] border-[#8b5cf6]/30'
+    case 'Package': return 'bg-[#06b6d4]/15 text-[#22d3ee] border-[#06b6d4]/30'
     case 'Bug Fix': return 'bg-[#f85149]/15 text-[#ff7b72] border-[#f85149]/30'
     case 'Feature': return 'bg-[#58a6ff]/15 text-[#79c0ff] border-[#58a6ff]/30'
     case 'Documentation': return 'bg-[#d29922]/15 text-[#e3b341] border-[#d29922]/30'
@@ -224,6 +232,7 @@ export default function OpenSourcePublicPage() {
               >
                 <option value="All">All Types</option>
                 <option value="Pull Request">Pull Requests</option>
+                <option value="Package">Packages</option>
                 <option value="Bug Fix">Bug Fixes</option>
                 <option value="Feature">Features</option>
                 <option value="Documentation">Documentation</option>
@@ -270,7 +279,7 @@ export default function OpenSourcePublicPage() {
                             
                             {/* Glowing Timeline Node */}
                             <div className="absolute left-[19px] sm:left-1/2 w-3 h-3 bg-[#0d1117] border-2 rounded-full z-10 sm:-translate-x-1/2 mt-6 transition-all duration-300 group-hover:scale-150 group-hover:bg-white" 
-                                 style={{ borderColor: contribution.status === 'Merged' ? '#3fb950' : contribution.status === 'Open' ? '#d29922' : '#f85149' }} />
+                                 style={{ borderColor: contribution.status === 'Published' ? '#06b6d4' : contribution.status === 'Merged' ? '#3fb950' : contribution.status === 'Open' ? '#d29922' : '#f85149' }} />
                             
                             {/* Invisible spacer for the other side */}
                             <div className="hidden sm:block sm:w-1/2" />
@@ -282,6 +291,7 @@ export default function OpenSourcePublicPage() {
                               >
                                 {/* Top accent line */}
                                 <div className={`absolute top-0 left-0 right-0 h-[2px] w-full ${
+                                  contribution.status === 'Published' ? 'bg-gradient-to-r from-transparent via-[#06b6d4] to-transparent opacity-70' :
                                   contribution.status === 'Merged' ? 'bg-gradient-to-r from-transparent via-[#3fb950] to-transparent opacity-70' :
                                   contribution.status === 'Open' ? 'bg-gradient-to-r from-transparent via-[#d29922] to-transparent opacity-70' :
                                   'bg-gradient-to-r from-transparent via-[#f85149] to-transparent opacity-70'
