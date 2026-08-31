@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Plus, Trash2, Edit3, X, Save, CheckCircle, ExternalLink, GitPullRequest, GitMerge, Bug, FileText, BookOpen, Star } from "lucide-react"
+import { Plus, Trash2, Edit3, X, Save, CheckCircle, ExternalLink, GitPullRequest, GitMerge, Bug, FileText, BookOpen, Star, RefreshCw } from "lucide-react"
 
 interface Contribution {
   _id: string
@@ -53,8 +53,10 @@ export default function OpenSourcePage() {
   const [editing, setEditing] = useState<Contribution | null>(null)
   const [isNew, setIsNew] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [syncing, setSyncing] = useState(false)
   const [saved, setSaved] = useState(false)
   const [newTag, setNewTag] = useState("")
+  const [syncMessage, setSyncMessage] = useState("")
 
   const loadEntries = () => {
     fetch("/api/admin/open-source").then(r => r.json()).then(data => {
@@ -134,6 +136,27 @@ export default function OpenSourcePage() {
     setEditing({ ...editing, techStack: editing.techStack.filter(t => t !== tag) })
   }
 
+  const syncGitHub = async () => {
+    setSyncing(true)
+    setSyncMessage("")
+    try {
+      const res = await fetch("/api/admin/open-source/sync", { method: "POST" })
+      const data = await res.json()
+      if (data.success) {
+        setSyncMessage(`Successfully imported ${data.imported} new PRs!`)
+        loadEntries()
+      } else {
+        setSyncMessage(data.error || "Failed to sync.")
+      }
+    } catch (err) {
+      console.error(err)
+      setSyncMessage("An error occurred during sync.")
+    } finally {
+      setSyncing(false)
+      setTimeout(() => setSyncMessage(""), 5000)
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -146,10 +169,22 @@ export default function OpenSourcePage() {
           </h1>
           <p className="text-[#7d8590] mt-1">Manage your open source contributions and pull requests.</p>
         </div>
-        <Button onClick={startCreate} className="bg-[#238636] hover:bg-[#2ea043] text-white border-0">
-          <Plus className="h-4 w-4 mr-2" /> Add Contribution
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={syncGitHub} disabled={syncing} variant="outline" className="border-[#30363d] text-[#7d8590] hover:text-white bg-[#161b22]">
+            <RefreshCw className={`h-4 w-4 mr-2 ${syncing ? 'animate-spin' : ''}`} />
+            {syncing ? "Fetching..." : "Fetch from GitHub"}
+          </Button>
+          <Button onClick={startCreate} className="bg-[#238636] hover:bg-[#2ea043] text-white border-0">
+            <Plus className="h-4 w-4 mr-2" /> Add Contribution
+          </Button>
+        </div>
       </div>
+
+      {syncMessage && (
+        <div className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm ${syncMessage.includes("error") || syncMessage.includes("Failed") ? 'text-[#f85149] bg-[#f85149]/10 border border-[#f85149]/30' : 'text-[#58a6ff] bg-[#58a6ff]/10 border border-[#58a6ff]/30'}`}>
+          <GitPullRequest className="h-4 w-4" /> {syncMessage}
+        </div>
+      )}
 
       {saved && (
         <div className="flex items-center gap-2 text-[#3fb950] bg-[#238636]/10 border border-[#238636]/30 px-4 py-2 rounded-lg text-sm">
